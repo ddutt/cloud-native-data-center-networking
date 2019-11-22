@@ -5,6 +5,8 @@ Code repository for the O'Reilly book 'Cloud Native Data Center Networking'. You
 
 I have not setup all the relevant code from the book yet, it should be done before the end of November 2019. 
 
+All my code has been tested on a Ubuntu laptop running either 18.04 or 19.04. If you experience an issue, please file a ticket and I'll do what I can to help, no promises. If you send me a fix via a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request), I'll be grateful and incorporate the fix as quickly as I can.
+
 # Software Used
 
 | Software          | Version |
