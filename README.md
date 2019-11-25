@@ -12,11 +12,14 @@ All my code has been tested on a Ubuntu laptop running either 18.04 or 19.04. If
 | Software          | Version |
 |-------------------|---------|
 |[Vagrant](https://www.vagrantup.com/)| 2.2.5|
-|[vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)||
+|[vagrant-libvirt](https://github.com/vagrant-libvirt/vagrant-libvirt)|
+|[Virtualbox](https://www.virtualbox.org/)| 6.0.6 |
 |[Ansible](https://www.ansible.com/)| 2.8.4 |
 |[FRRouting](https://frrouting.org/)| 7.2 & version in Cumulus 3.7.x|
 
-The vagrant-libvirt link contains instructions on installing libvirt, QEMU and KVM for various Linux distributions. I use libvirt because it spins up VMs in parallel, making the entire setup a breeze on most modern laptops. For example, on my Lenovo Yoga 920 with an i7-8550U processor and 16GB RAM, I can spin up all of the different simulations in less than two minutes, and still have a functioning laptop where I'm browsing, editing code etc. Virtualbox is more universally supported such as on Windows and Macs, but is much slower. Remember to use the Vagrant-vbox file to spin up the simulation using Virtualbox. 
+The vagrant-libvirt link contains instructions on installing libvirt, QEMU and KVM for various Linux distributions. I use libvirt because it spins up VMs in parallel, making the entire setup a breeze on most modern laptops. For example, on my Lenovo Yoga 920 with an i7-8550U processor and 16GB RAM running Ubuntu 19.04, I can spin up all of the different simulations in less than two minutes, and still have a functioning laptop where I'm browsing, editing code etc. Virtualbox is more universally supported such as on Windows and Macs, but is much slower. Remember to use the Vagrant-vbox file to spin up the simulation using Virtualbox. 
+
+Even though I tested using Virtualbox 6.0.6, the virtualbox images for Cumulus VX have been built with Virtualbox Guest Additions for 5.1.8. That did not pose a problem for my testing and I don't use shared folders.
 
 ### Vagrant Boxes Used
 
@@ -53,11 +56,18 @@ There are three main scenarios (each with its own set of subscenarios) that warr
    
 Each of these scenarios also has validation playbooks as described in chapter 18. Those validation playbooks have been embedded inside each of the appropriate scenarios.
 
-*The topologies used in this github differ from the ones used in the deployment chapters in the book*. They've been simplified and expanded. Simplified by reducing the number of servers to enable the simulation to run on a 16GB RAM laptop. Expanded by using a generic single attach and a dual-attach topology for all scenarios described in the book.
+**The topologies used in this github differ from the ones used in the deployment chapters in the book**. They've been simplified and expanded. Simplified by reducing the number of servers to enable the simulation to run on a 16GB RAM laptop. Expanded by using a generic single attach and a dual-attach topology for all scenarios described in the book.
 
-The dual-attach topology used across all the scenarios looks like this:
+Single attached servers is common in larger networks while dual-attached servers is common in enterprise and smaller networks.
+
+The dual-attached server topology used across all the scenarios looks like this:
 
 ![Dual-Attach Topology](./dual-attach-topo.png)
+
+The single-attached server topology used across all the scenarios looks like this:
+
+![Single-Attach Topology](./single-attach-topo.png)
+
 
 ## Running the Playbooks
 
