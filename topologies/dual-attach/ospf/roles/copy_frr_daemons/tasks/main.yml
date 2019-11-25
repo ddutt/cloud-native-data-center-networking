@@ -1,0 +1,6 @@
+---
+  - name: copy FRR daemons
+    copy: src=config/{{ansible_hostname}}/daemons dest=/etc/frr/
+  - name: copy FRR.conf
+    copy: src=config/{{ansible_hostname}}/frr.conf dest=/etc/frr/
+

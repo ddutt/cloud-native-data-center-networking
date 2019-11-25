@@ -1,0 +1,64 @@
+auto all
+
+auto lo
+iface lo inet loopback
+
+auto mgmt
+iface mgmt
+  address 127.0.0.1/8
+  vrf-table auto
+
+auto eth0
+iface eth0 inet dhcp
+  vrf mgmt
+
+
+# uplinks
+iface swp1
+
+iface swp2
+
+# uplinks
+iface swp3
+  post-up ip link set promisc on dev swp3
+  
+
+iface swp4
+  post-up ip link set promisc on dev swp4
+
+iface peerlink
+  bond-slaves swp3 swp4
+
+iface peerlink.4094
+  address 169.254.1.1/30
+  clagd-peer-ip 169.254.1.2
+  clagd-backup-ip 10.0.0.12
+  clagd-sys-mac 44:39:39:ff:40:94
+  clagd-priority 100
+
+# bridge to hosts
+iface swp5
+  post-up ip link set promisc on dev swp5
+
+iface swp6
+  post-up ip link set promisc on dev swp6
+
+iface bond01
+  bond-slaves swp5
+  bridge-access 10
+  clag-id 1
+
+iface bond02
+  bond-slaves swp6
+  bridge-access 10
+  clag-id 2
+
+iface bridge
+     bridge-vlan-aware yes
+     bridge-ports bond01 bond02 peerlink
+     bridge-vids 10
+     bridge-pvid 10
+
+iface vlan10
+     vlan-id 10
+     vlan-raw-device bridge

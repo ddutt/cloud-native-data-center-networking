@@ -1,0 +1,103 @@
+#  Only put here in case it's needed - not currently used in this playbook
+
+
+# networking
+networks: []
+
+interfaces:
+    leaf01:
+      loopback: "10.0.0.11"
+      asn: 65011
+      neighbors:
+        swp1:
+        swp2:
+        swp51:
+        swp52:
+    leaf02:
+      loopback: "10.0.0.12"
+      asn: 65012
+      neighbors:
+        swp1:
+        swp2:
+        swp51:
+        swp52:
+    leaf03:
+      loopback: "10.0.0.13"
+      asn: 65013
+      neighbors:
+        swp1:
+        swp2:
+        swp51:
+        swp52:
+    leaf04:
+      loopback: "10.0.0.14"
+      asn: 65014
+      neighbors:
+        swp1:
+        swp2:
+        swp51:
+        swp52:
+    spine01:
+      loopback: "10.0.0.21"
+      asn: 65020
+      neighbors:
+        swp1:
+        swp2:
+        swp3:
+        swp4:
+        swp29:
+        swp30:
+    spine02:
+      loopback: "10.0.0.22"
+      asn: 65020
+      neighbors:
+        swp1:
+        swp2:
+        swp3:
+        swp4:
+        swp29:
+        swp30:
+    exit01:
+      loopback: "10.0.0.41"
+      asn: 65041
+      neighbors:
+        swp51:
+        swp52:
+        swp44:
+    exit02:
+      loopback: "10.0.0.42"
+      asn: 65042
+      neighbors:
+        swp51:
+        swp52:
+        swp44:
+    internet:
+      loopback: "10.0.0.253"
+      asn: 25253
+      neighbors:
+         swp1:  
+         swp2:
+    server01:
+      loopback: "10.0.0.31"
+      asn: 65031
+      neighbors:
+        eth1:
+        eth2:
+    server02:
+      loopback: "10.0.0.32"
+      asn: 65032
+      neighbors:
+        eth1:
+        eth2:
+    server03:
+      loopback: "10.0.0.33"
+      asn: 65033
+      neighbors:
+        eth1:
+        eth2:
+    server04:
+      loopback: "10.0.0.34"
+      asn: 65034
+      neighbors:
+        eth1:
+        eth2:

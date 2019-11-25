@@ -1,0 +1,13 @@
+---
+
+- hosts: leaf:spine:exit
+  become: yes
+  tasks:
+    - name: Delete all config
+      command: net del all
+    - name: Delete all config
+      command: net commit
+    - name: reload networking
+      command: ifreload -a
+    - name: reload frr
+      service: name=frr state=restarted
