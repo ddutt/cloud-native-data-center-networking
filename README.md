@@ -51,9 +51,13 @@ There are three main scenarios (each with its own set of subscenarios) that warr
    2. Distributed Routing with eBGP
    3. OSPF + iBGP with Distributed Routing
    
-The code is organized into three different directories as per these three main scenarios. There are directories within each scenario that contain the playbooks for each of the associated subscenarios. 
-
 Each of these scenarios also has validation playbooks as described in chapter 18. Those validation playbooks have been embedded inside each of the appropriate scenarios.
+
+*The topologies used in this github differ from the ones used in the deployment chapters in the book*. They've been simplified and expanded. Simplified by reducing the number of servers to enable the simulation to run on a 16GB RAM laptop. Expanded by using a generic single attach and a dual-attach topology for all scenarios described in the book.
+
+The dual-attach topology used across all the scenarios looks like this:
+
+![Dual-Attach Topology](./dual-attach-topo.png)
 
 ## Running the Playbooks
 
