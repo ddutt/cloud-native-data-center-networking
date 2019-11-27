@@ -1,0 +1,9 @@
+---
+- name: stop ntp
+  shell: systemctl stop ntp
+- name: disable ntp
+  shell: systemctl disable ntp
+- name: start ntp in the management vrf
+  shell:  systemctl start ntp@mgmt
+- name: enable ntp in the management vrf
+  shell: systemctl enable ntp@mgmt

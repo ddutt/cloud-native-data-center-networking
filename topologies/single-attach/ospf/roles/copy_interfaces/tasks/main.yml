@@ -1,0 +1,4 @@
+---
+  - name: copy interfaces
+    copy: src=config-files/{{scenario}}/{{ansible_hostname}}/interfaces dest=/etc/network/
+  

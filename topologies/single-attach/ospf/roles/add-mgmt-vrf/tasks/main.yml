@@ -1,0 +1,13 @@
+---
+- name: add mgmt vrf
+  nclu: 
+    atomic: true
+    commands:
+      - add vrf mgmt
+    description: "add mgmt vrf"
+  async: 1
+  poll: 0
+  ignore_errors: true
+
+- name: Reconnect to switches 
+  local_action: wait_for port=22 host="{{ inventory_hostname }}" search_regex=OpenSSH delay=10

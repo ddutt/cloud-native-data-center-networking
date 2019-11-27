@@ -1,0 +1,13 @@
+---
+ - name: Turn off SSH rev DNS lookup
+   lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: '^UseDNS '
+      line: UseDNS no
+
+ - name: copy interfaces
+   copy: src=config-files/{{scenario}}/{{ansible_hostname}}/interfaces dest=/etc/network/
+
+ - name: restart interfaces
+   become: yes
+   command: ifup -a --force

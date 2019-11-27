@@ -1,0 +1,31 @@
+---
+- hosts: '!servers'
+  become: yes
+  tasks:
+    - name: Disable all interfaces
+      copy: src=reset-files/interfaces dest=/etc/network
+    - name: Disable all FRR daemons
+      copy: src=reset-files/daemons dest=/etc/frr
+    - name: Remove FRR config
+      copy: src=reset-files/frr.conf dest=/etc/frr
+    - name: reload networking
+      command: ifreload -a
+    - name: reload frr
+      service: name=frr state=restarted
+
+- hosts: servers
+  become: yes
+  tasks:
+    - name: Disable all interfaces
+      copy: src=reset-files/interfaces dest=/etc/network
+    - name: reboot servers
+      shell: sleep 1 && shutdown -r 0
+      become: yes
+      async: 1
+      poll: 0
+      ignore_errors: true
+
+    - name: Wait for servers to come back up
+      wait_for_connection:
+          timeout: 180
+          delay: 15

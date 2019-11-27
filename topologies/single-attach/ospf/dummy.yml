@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - file:
+         path: /home/vagrant/foo.txt
+         state: touch

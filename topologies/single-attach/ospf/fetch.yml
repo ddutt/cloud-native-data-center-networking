@@ -1,0 +1,15 @@
+---
+- hosts: all
+  tasks:
+   - name: Fetch interfaces file
+     fetch: src=/etc/network/interfaces dest=./fetch-config
+   - name: Fetch frr.conf file
+     fetch: src=/etc/frr/frr.conf dest=./fetch-config
+
+- hosts: servers
+  tasks:
+   - name: Fetch daemon.json file
+     fetch: src=/etc/docker/daemon.json dest=./fetch-config
+   - name: Fetch sysctl.d file
+     fetch: src=/etc/sysctl.d/99-frr.conf dest=./fetch-config
+

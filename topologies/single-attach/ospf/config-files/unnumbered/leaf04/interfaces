@@ -1,0 +1,33 @@
+auto all
+
+auto lo
+iface lo inet loopback
+
+auto mgmt
+iface mgmt
+  address 127.0.0.1/8
+  vrf-table auto
+
+auto eth0
+iface eth0 inet dhcp
+  vrf mgmt
+
+
+# uplinks
+iface swp1
+
+iface swp2
+
+# bridge to hosts
+iface swp5
+  post-up ip link set promisc on dev swp5
+
+iface bridge
+     bridge-vlan-aware yes
+     bridge-ports swp5
+     bridge-vids 10
+     bridge-pvid 10
+
+iface vlan10
+     vlan-id 10
+     vlan-raw-device bridge
