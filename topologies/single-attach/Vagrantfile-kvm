@@ -1,0 +1,803 @@
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
+
+# Check required plugins
+REQUIRED_PLUGINS_LIBVIRT = %w(vagrant-libvirt)
+exit unless REQUIRED_PLUGINS_LIBVIRT.all? do |plugin|
+  Vagrant.has_plugin?(plugin) || (
+    puts "The #{plugin} plugin is required. Please install it with:"
+    puts "$ vagrant plugin install #{plugin}"
+    false
+  )
+end
+
+Vagrant.require_version ">= 2.0.2"
+
+
+Vagrant.configure("2") do |config|
+
+  config.vm.provider :libvirt do |domain|
+    # increase nic adapter count to be greater than 8 for all VMs.
+    domain.nic_adapter_count = 130
+    domain.management_network_name = "default"
+    domain.management_network_address = "192.168.122.0/24"
+  end
+
+# Merely to generate the provisioning file
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "dummy.yml"
+    ansible.groups = {
+      "leaf" => ["leaf[01:04]"],
+      "spine" => ["spine0[1:2]"],
+      "exit" => ["exit0[1:2]"],
+      "servers" => ["server10[1:4]"],
+      "edge" => ["internet"],
+      "firewall" => ["edge01"],
+      "network:children" => ["leaf", "spine", "exit", "edge"],
+    }
+  end
+
+
+  ##### DEFINE VM for exit02 #####
+  config.vm.define "exit02" do |device|
+    
+    device.vm.hostname = "exit02" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> spine01:swp6
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:21",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18021',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19021',
+            :libvirt__iface_name => 'swp51',
+            auto_config: false
+      # link for swp2 --> spine02:swp6
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:55",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18053',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19053',
+            :libvirt__iface_name => 'swp52',
+            auto_config: false
+      # link for swp3 --> exit01:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:30",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18030',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19030',
+            :libvirt__iface_name => 'swp45',
+            auto_config: false
+      # link for swp4 --> exit01:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:31",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19030',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18030',
+            :libvirt__iface_name => 'swp46',
+            auto_config: false
+      # link for swp5 --> edge01:eth2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:0c",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19007',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18007',
+            :libvirt__iface_name => 'swp1',
+            auto_config: false
+      # link for swp6 --> internet:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:3f",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19039',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18039',
+            :libvirt__iface_name => 'swp44',
+            auto_config: false
+  end
+  ##### DEFINE VM for exit01 #####
+  config.vm.define "exit01" do |device|
+    
+    device.vm.hostname = "exit01" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> spine01:swp5
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:09",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18006',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19006',
+            :libvirt__iface_name => 'swp51',
+            auto_config: false
+      # link for swp2 --> spine02:swp5
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:5a",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18056',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19056',
+            :libvirt__iface_name => 'swp52',
+            auto_config: false
+      # link for swp3 --> exit01:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:44",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18043',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19043',
+            :libvirt__iface_name => 'swp45',
+            auto_config: false
+      # link for swp4 --> exit01:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:45",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19043',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18043',
+            :libvirt__iface_name => 'swp46',
+            auto_config: false
+      # link for swp5 --> edge01:eth1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:4b",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19046',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18046',
+            :libvirt__iface_name => 'swp1',
+            auto_config: false
+      # link for swp6 --> internet:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:08",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19005',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18005',
+            :libvirt__iface_name => 'swp44',
+            auto_config: false
+
+  end
+  ##### DEFINE VM for spine02 #####
+  config.vm.define "spine02" do |device|
+    
+    device.vm.hostname = "spine02" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> leaf01:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:25",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19023',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18023',
+            :libvirt__iface_name => 'swp1',
+            auto_config: false
+      # link for swp2 --> leaf02:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:5e",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19058',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18058',
+            :libvirt__iface_name => 'swp2',
+            auto_config: false
+      # link for swp3 --> leaf03:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:1c",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19017',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18017',
+            :libvirt__iface_name => 'swp3',
+            auto_config: false
+      # link for swp4 --> leaf04:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:47",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19044',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18044',
+            :libvirt__iface_name => 'swp4',
+            auto_config: false
+      # link for swp5 --> exit02:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:56",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19053',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18053',
+            :libvirt__iface_name => 'swp29',
+            auto_config: false
+      # link for swp6 --> exit01:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:5b",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19056',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18056',
+            :libvirt__iface_name => 'swp30',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for spine01 #####
+  config.vm.define "spine01" do |device|
+    
+    device.vm.hostname = "spine01" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> leaf01:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:54",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19052',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18052',
+            :libvirt__iface_name => 'swp1',
+            auto_config: false
+      # link for swp2 --> leaf02:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:29",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19025',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18025',
+            :libvirt__iface_name => 'swp2',
+            auto_config: false
+      # link for swp3 --> leaf03:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:50",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19050',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18050',
+            :libvirt__iface_name => 'swp3',
+            auto_config: false
+      # link for swp4 --> leaf04:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:3c",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19037',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18037',
+            :libvirt__iface_name => 'swp4',
+            auto_config: false
+      # link for swp5 --> exit02:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:22",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19021',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18021',
+            :libvirt__iface_name => 'swp29',
+            auto_config: false
+      # link for swp6 --> exit01:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:0a",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19006',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18006',
+            :libvirt__iface_name => 'swp30',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for leaf04 #####
+  config.vm.define "leaf04" do |device|
+    
+    device.vm.hostname = "leaf04" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> spine01:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:3b",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18037',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19037',
+            :libvirt__iface_name => 'swp51',
+            auto_config: false
+      # link for swp2 --> spine02:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:46",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18044',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19044',
+            :libvirt__iface_name => 'swp52',
+            auto_config: false
+      # link for swp3 --> leaf03:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:19",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18016',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19016',
+            :libvirt__iface_name => 'swp45',
+            auto_config: false
+      # link for swp4 --> leaf03:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:1a",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19026',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18026',
+            :libvirt__iface_name => 'swp46',
+            auto_config: false
+      # link for swp5 --> server104:eth2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:2c",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19027',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18027',
+            :libvirt__iface_name => 'swp2',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for leaf02 #####
+  config.vm.define "leaf02" do |device|
+    
+    device.vm.hostname = "leaf02" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> spine01:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:28",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18025',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19025',
+            :libvirt__iface_name => 'swp51',
+            auto_config: false
+      # link for swp2 --> spine02:swp2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:5d",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18058',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19058',
+            :libvirt__iface_name => 'swp52',
+            auto_config: false
+      # link for swp3 --> leaf02:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:0d",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19008',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18008',
+            :libvirt__iface_name => 'swp45',
+            auto_config: false
+      # link for swp4 --> leaf02:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:0e",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19018',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18018',
+            :libvirt__iface_name => 'swp46',
+            auto_config: false
+      # link for swp5 --> server102:eth2
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:18",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19015',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18015',
+            :libvirt__iface_name => 'swp2',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for leaf03 #####
+  config.vm.define "leaf03" do |device|
+    
+    device.vm.hostname = "leaf03" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> spine01:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:4f",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18050',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19050',
+            :libvirt__iface_name => 'swp51',
+            auto_config: false
+      # link for swp2 --> spine02:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:1b",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18017',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19017',
+            :libvirt__iface_name => 'swp52',
+            auto_config: false
+      # link for swp3 --> leaf03:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:2a",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19016',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18016',
+            :libvirt__iface_name => 'swp45',
+            auto_config: false
+      # link for swp4 --> leaf03:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:2b",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18026',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19026',
+            :libvirt__iface_name => 'swp46',
+            auto_config: false
+      # link for swp5 --> server104:eth1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:1f",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19019',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18019',
+            :libvirt__iface_name => 'swp2',
+            auto_config: false
+
+  end
+
+  ##### DEFINE VM for leaf01 #####
+  config.vm.define "leaf01" do |device|
+    
+    device.vm.hostname = "leaf01" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> spine01:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:53",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18052',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19052',
+            :libvirt__iface_name => 'swp51',
+            auto_config: false
+      # link for swp2 --> spine02:swp1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:24",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18023',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19023',
+            :libvirt__iface_name => 'swp52',
+            auto_config: false
+      # link for swp3 --> leaf02:swp3
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:1d",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18008',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19008',
+            :libvirt__iface_name => 'swp45',
+            auto_config: false
+      # link for swp4 --> leaf02:swp4
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:1e",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18018',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19018',
+            :libvirt__iface_name => 'swp46',
+            auto_config: false
+      # link for swp5 --> server101:eth1
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:03",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '19002',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '18002',
+            :libvirt__iface_name => 'swp1',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for edge01 #####
+  config.vm.define "edge01" do |device|
+    
+    device.vm.hostname = "edge01" 
+    
+    device.vm.box = "yk0/ubuntu-xenial"
+
+    device.vm.provider :libvirt do |v|
+      v.nic_model_type = 'e1000' 
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for eth1 --> exit01:swp5
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:4a",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18046',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19046',
+            :libvirt__iface_name => 'eth1',
+            auto_config: false
+      # link for eth2 --> exit02:swp5
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:0b",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18007',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19007',
+            :libvirt__iface_name => 'eth2',
+            auto_config: false
+
+      device.vm.provision :shell , privileged: false, :inline => 'echo "$(whoami)" > /tmp/normal_user'
+      device.vm.provision :shell , path: "./helper_scripts/config_edge.sh"
+
+end
+
+  ##### DEFINE VM for server101 #####
+  config.vm.define "server101" do |device|
+    
+    device.vm.hostname = "server101" 
+    
+    device.vm.box = "yk0/ubuntu-xenial"
+
+    device.vm.provider :libvirt do |v|
+      v.nic_model_type = 'e1000' 
+      v.memory = 512
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for eth1 --> leaf01:swp5
+      device.vm.network "private_network",
+            :mac => "00:03:00:11:11:01",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18002',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19002',
+            :libvirt__iface_name => 'eth1',
+            auto_config: false
+
+  end
+
+  ##### DEFINE VM for server103 #####
+  config.vm.define "server103" do |device|
+    
+    device.vm.hostname = "server103" 
+    
+    device.vm.box = "yk0/ubuntu-xenial"
+
+    device.vm.provider :libvirt do |v|
+      v.nic_model_type = 'e1000' 
+      v.memory = 512
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for eth1 --> leaf03:swp5
+      device.vm.network "private_network",
+            :mac => "00:03:00:33:33:01",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18022',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19022',
+            :libvirt__iface_name => 'eth1',
+            auto_config: false
+
+  end
+  ##### DEFINE VM for server102 #####
+  config.vm.define "server102" do |device|
+    
+    device.vm.hostname = "server102" 
+    
+    device.vm.box = "yk0/ubuntu-xenial"
+
+    device.vm.provider :libvirt do |v|
+      v.nic_model_type = 'e1000' 
+      v.memory = 512
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for eth1 --> leaf02:swp6
+      device.vm.network "private_network",
+            :mac => "00:03:00:22:22:02",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18015',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19015',
+            :libvirt__iface_name => 'eth2',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for server104 #####
+  config.vm.define "server104" do |device|
+    
+    device.vm.hostname = "server104" 
+    
+    device.vm.box = "yk0/ubuntu-xenial"
+
+    device.vm.provider :libvirt do |v|
+      v.nic_model_type = 'e1000' 
+      v.memory = 512
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for eth1 --> leaf04:swp6
+      device.vm.network "private_network",
+            :mac => "00:03:00:44:44:02",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18027',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19027',
+            :libvirt__iface_name => 'eth2',
+            auto_config: false
+  end
+
+  ##### DEFINE VM for internet #####
+  config.vm.define "internet" do |device|
+    
+    device.vm.hostname = "internet" 
+    
+    device.vm.box = "CumulusCommunity/cumulus-vx"
+    device.vm.box_version = ">= 3.5.1"
+
+    device.vm.provider :libvirt do |v|
+      v.memory = 768
+    end
+    #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+    device.vm.synced_folder ".", "/vagrant", disabled: true
+
+    # NETWORK INTERFACES
+      # link for swp1 --> exit01:swp6
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:07",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18005',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19005',
+            :libvirt__iface_name => 'swp1',
+            auto_config: false
+      # link for swp2 --> exit02:swp6
+      device.vm.network "private_network",
+            :mac => "44:38:39:00:00:3e",
+            :libvirt__tunnel_type => 'udp',
+            :libvirt__tunnel_local_ip => '127.0.0.1',
+            :libvirt__tunnel_local_port => '18039',
+            :libvirt__tunnel_ip => '127.0.0.1',
+            :libvirt__tunnel_port => '19039',
+            :libvirt__iface_name => 'swp2',
+            auto_config: false
+  end
+
+end

@@ -1,0 +1,575 @@
+
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
+
+Vagrant.require_version ">= 2.0.2"
+
+Vagrant.configure("2") do |config|
+     
+     simid = 1516247777
+     
+     config.vm.provider "virtualbox" do |v|
+          v.gui=false
+          
+     end
+     
+     # Merely to generate the provisioning file
+     config.vm.provision "ansible" do |ansible|
+          ansible.playbook = "dummy.yml"
+          ansible.groups = {
+          "leaf" => ["leaf[01:04]"],
+          "spine" => ["spine0[1:2]"],
+          "exit" => ["exit0[1:2]"],
+          "servers" => ["server10[1:4]"],
+          "edge" => ["internet"],
+          "firewall" => ["edge01"],
+          "network:children" => ["leaf", "spine", "exit", "edge"],
+          }
+     end
+
+     ##### DEFINE VM for exit02 #####
+     config.vm.define "exit02" do |device|
+       
+       device.vm.hostname = "exit02" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_exit02"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+
+       # NETWORK INTERFACES
+       # link for swp1 --> spine01:swp6
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e02", auto_config: false , :mac => "443839000021"
+       
+       # link for swp2 --> spine02:swp6
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e02", auto_config: false , :mac => "443839000055"
+       
+       # link for swp3 --> exit01:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e021", auto_config: false , :mac => "443839000030"
+       
+       # link for swp4 --> exit01:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e022", auto_config: false , :mac => "443839000031"
+       
+       # link for swp5 --> edge01:eth2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02f01", auto_config: false , :mac => "44383900000c"
+       
+       # link for swp6 --> internet:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02i", auto_config: false , :mac => "44383900003f"
+       
+
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc8', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+
+     ##### DEFINE VM for exit01 #####
+     config.vm.define "exit01" do |device|
+
+       device.vm.hostname = "exit01" 
+
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_exit01"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+
+       # NETWORK INTERFACES
+       # link for swp1 --> spine01:swp5
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e01", auto_config: false , :mac => "443839000009"
+
+       # link for swp2 --> spine02:swp5
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e01", auto_config: false , :mac => "44383900005a"
+
+       # link for swp3 --> exit02:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e021", auto_config: false , :mac => "443839000044"
+
+       # link for swp4 --> exit02:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e022", auto_config: false , :mac => "443839000045"
+
+       # link for swp5 --> edge01:eth1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01f01", auto_config: false , :mac => "44383900004b"
+
+       # link for swp6 --> internet:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01i", auto_config: false , :mac => "443839000008"
+
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc8', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+
+     end
+     
+     ##### DEFINE VM for spine02 #####
+     config.vm.define "spine02" do |device|
+       
+       device.vm.hostname = "spine02" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_spine02"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for swp1 --> leaf01:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l01", auto_config: false , :mac => "443839000025"
+       
+       # link for swp2 --> leaf02:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l02", auto_config: false , :mac => "44383900005e"
+       
+       # link for swp3 --> leaf03:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l03", auto_config: false , :mac => "44383900001c"
+       
+       # link for swp4 --> leaf04:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l04", auto_config: false , :mac => "443839000047"
+       
+       # link for swp29 --> exit02:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e02", auto_config: false , :mac => "443839000056"
+       
+       # link for swp30 --> exit01:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e01", auto_config: false , :mac => "44383900005b"
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+                         
+     ##### DEFINE VM for spine01 #####
+     config.vm.define "spine01" do |device|
+       
+       device.vm.hostname = "spine01" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_spine01"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for swp1 --> leaf01:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l01", auto_config: false , :mac => "443839000054"
+       
+       # link for swp2 --> leaf02:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l02", auto_config: false , :mac => "443839000029"
+       
+       # link for swp3 --> leaf03:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l03", auto_config: false , :mac => "443839000050"
+       
+       # link for swp4 --> leaf04:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l04", auto_config: false , :mac => "44383900003c"
+       
+       # link for swp29 --> exit02:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e02", auto_config: false , :mac => "443839000022"
+       
+       # link for swp30 --> exit01:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e01", auto_config: false , :mac => "44383900000a"
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc8', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+                              
+     end
+
+     ##### DEFINE VM for leaf04 #####
+     config.vm.define "leaf04" do |device|
+       
+       device.vm.hostname = "leaf04" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_leaf04"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for swp1 --> spine01:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l04", auto_config: false , :mac => "44383900003b"
+       
+       # link for swp2 --> spine02:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l04", auto_config: false , :mac => "443839000046"
+       
+       # link for swp3 --> leaf04:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04l041", auto_config: false , :mac => "443839000019"
+       
+       # link for swp4 --> leaf04:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04l042", auto_config: false , :mac => "44383900001a"
+       
+       # link for swp5 --> server104:eth2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h04", auto_config: false , :mac => "44383900002c"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+       
+     end
+     
+     ##### DEFINE VM for leaf02 #####
+     config.vm.define "leaf02" do |device|
+       
+       device.vm.hostname = "leaf02" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_leaf02"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       # NETWORK INTERFACES
+       
+       # link for swp1 --> spine01:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l02", auto_config: false , :mac => "443839000028"
+       
+       # link for swp2 --> spine02:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l02", auto_config: false , :mac => "44383900005d"
+       
+       # link for swp3 --> leaf02:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l021", auto_config: false , :mac => "44383900000d"
+       
+       # link for swp4 --> leaf02:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l022", auto_config: false , :mac => "44383900000e"
+
+       # link for swp5 --> server102:eth2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h02", auto_config: false , :mac => "443839000018"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+
+     ##### DEFINE VM for leaf03 #####
+     config.vm.define "leaf03" do |device|
+       
+       device.vm.hostname = "leaf03" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_leaf03"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       # link for swp1 --> spine01:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l03", auto_config: false , :mac => "44383900004f"
+       
+       # link for swp2 --> spine02:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l03", auto_config: false , :mac => "44383900001b"
+       
+       # link for swp3 --> leaf03:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l041", auto_config: false , :mac => "44383900002a"
+       
+       # link for swp4 --> leaf03:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l042", auto_config: false , :mac => "44383900002b"
+       
+       # NETWORK INTERFACES
+       # link for swp5 --> server103:eth1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h03", auto_config: false , :mac => "443839000023"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+       
+     end
+     
+     ##### DEFINE VM for leaf01 #####
+     config.vm.define "leaf01" do |device|
+       
+       device.vm.hostname = "leaf01" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_leaf01"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       # NETWORK INTERFACES
+       # link for swp1 --> spine01:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l01", auto_config: false , :mac => "443839000053"
+       
+       # link for swp2 --> spine02:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l01", auto_config: false , :mac => "443839000024"
+       
+       # link for swp3 --> leaf01:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l021", auto_config: false , :mac => "44383900001d"
+       
+       # link for swp4 --> leaf01:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l022", auto_config: false , :mac => "44383900001e"
+       
+       # link for swp5 --> server101:eth1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h01", auto_config: false , :mac => "443839000003"
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc5', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc6', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc7', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+       
+     end
+     
+     ##### DEFINE VM for edge01 #####
+     config.vm.define "edge01" do |device|
+       device.vm.hostname = "edge01" 
+       
+       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_edge01"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for eth1 --> exit01:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01f01", auto_config: false , :mac => "44383900004a"
+       # link for eth2 --> exit02:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02f01", auto_config: false , :mac => "44383900000b"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+                                                       
+       # Fixes "stdin: is not a tty" and "mesg: ttyname failed : Inappropriate ioctl for device"  messages --> https://github.com/mitchellh/vagrant/issues/1673
+       # Run the Config specified in the Node Attributes
+       device.vm.provision :shell , privileged: false, :inline => 'echo "$(whoami)" > /tmp/normal_user'
+       device.vm.provision :shell , path: "./helper_scripts/config_edge.sh"
+                                                            
+     end
+     
+     ##### DEFINE VM for server101 #####
+     config.vm.define "server101" do |device|
+       
+       device.vm.hostname = "server101" 
+       
+       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_server101"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 512
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       # NETWORK INTERFACES
+       # link for eth1 --> leaf01:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h01", auto_config: false , :mac => "000300111101"
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+                                                            
+     ##### DEFINE VM for server103 #####
+     config.vm.define "server103" do |device|
+       
+       device.vm.hostname = "server103" 
+       
+       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_server103"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 512
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for eth1 --> leaf03:swp1
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h03", auto_config: false , :mac => "000300333301"
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+
+     ##### DEFINE VM for server102 #####
+     config.vm.define "server102" do |device|
+       
+       device.vm.hostname = "server102" 
+       
+       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_server102"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 512
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for eth1 --> leaf02:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h02", auto_config: false , :mac => "000300222202"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+
+     ##### DEFINE VM for server104 #####
+     config.vm.define "server104" do |device|
+       
+       device.vm.hostname = "server104" 
+       
+       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_server104"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 512
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for eth2 --> leaf04:swp2
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h04", auto_config: false , :mac => "000300444402"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+
+     end
+
+     ##### DEFINE VM for internet #####
+     config.vm.define "internet" do |device|
+       
+       device.vm.hostname = "internet" 
+       
+       device.vm.box = "CumulusCommunity/cumulus-vx"
+       device.vm.box_version = ">= 3.5.1"
+       device.vm.provider "virtualbox" do |v|
+         v.name = "#{simid}_internet"
+         v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
+         v.memory = 768
+       end
+       #   see note here: https://github.com/pradels/vagrant-libvirt#synced-folders
+       device.vm.synced_folder ".", "/vagrant", disabled: true
+       
+       
+       
+       # NETWORK INTERFACES
+       # link for swp1 --> exit01:swp44
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01i", auto_config: false , :mac => "443839000007"
+       
+       # link for swp2 --> exit02:swp44
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02i", auto_config: false , :mac => "44383900003e"
+       
+       
+       device.vm.provider "virtualbox" do |vbox|
+         vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc3', 'allow-all']
+         vbox.customize ['modifyvm', :id, '--nicpromisc4', 'allow-all']
+         vbox.customize ["modifyvm", :id, "--nictype1", "virtio"]
+       end
+     end
+end
+                                                                           
