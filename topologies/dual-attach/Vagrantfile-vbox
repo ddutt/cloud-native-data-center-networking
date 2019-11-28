@@ -1,6 +1,10 @@
 
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 
+SERVER_VM= "generic/ubuntu1604"
+VX_VM = "CumulusCommunity/cumulus-vx"
+VX_VERSION = "~> 3.7.0"
+
 Vagrant.require_version ">= 2.0.2"
 
 Vagrant.configure("2") do |config|
@@ -31,8 +35,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "exit02" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_exit02"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -78,8 +82,8 @@ Vagrant.configure("2") do |config|
 
        device.vm.hostname = "exit01" 
 
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_exit01"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -126,8 +130,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "spine02" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_spine02"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -173,8 +177,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "spine01" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_spine01"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -222,8 +226,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "leaf04" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_leaf04"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -272,8 +276,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "leaf02" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_leaf02"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -320,8 +324,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "leaf03" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_leaf03"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -368,8 +372,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "leaf01" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_leaf01"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -414,7 +418,7 @@ Vagrant.configure("2") do |config|
      config.vm.define "edge01" do |device|
        device.vm.hostname = "edge01" 
        
-       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.box = SERVER_VM
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_edge01"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -451,7 +455,7 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "server101" 
        
-       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.box = SERVER_VM
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_server101"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -481,7 +485,7 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "server103" 
        
-       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.box = SERVER_VM
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_server103"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -513,7 +517,7 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "server102" 
        
-       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.box = SERVER_VM
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_server102"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -545,7 +549,7 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "server104" 
        
-       device.vm.box = "yk0/ubuntu-xenial"
+       device.vm.box = SERVER_VM
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_server104"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']
@@ -578,8 +582,8 @@ Vagrant.configure("2") do |config|
        
        device.vm.hostname = "internet" 
        
-       device.vm.box = "CumulusCommunity/cumulus-vx"
-       device.vm.box_version = ">= 3.5.1"
+       device.vm.box = VX_VM
+       device.vm.box_version = VX_VERSION
        device.vm.provider "virtualbox" do |v|
          v.name = "#{simid}_internet"
          v.customize ["modifyvm", :id, '--audiocontroller', 'AC97', '--audio', 'Null']

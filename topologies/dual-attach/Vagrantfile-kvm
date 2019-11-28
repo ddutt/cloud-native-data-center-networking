@@ -1,5 +1,9 @@
 ENV['VAGRANT_DEFAULT_PROVIDER'] = 'libvirt'
 
+SERVER_VM= "generic/ubuntu1604"
+VX_VM = "CumulusCommunity/cumulus-vx"
+VX_VERSION = "~> 3.7.0"
+
 # Check required plugins
 REQUIRED_PLUGINS_LIBVIRT = %w(vagrant-libvirt)
 exit unless REQUIRED_PLUGINS_LIBVIRT.all? do |plugin|
@@ -42,8 +46,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "exit02" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -118,8 +122,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "exit01" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -195,8 +199,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "spine02" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -272,8 +276,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "spine01" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -349,8 +353,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "leaf04" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -426,8 +430,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "leaf02" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -503,8 +507,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "leaf03" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -581,8 +585,8 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "leaf01" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
@@ -658,7 +662,7 @@ Vagrant.configure("2") do |config|
     
     device.vm.hostname = "edge01" 
     
-    device.vm.box = "yk0/ubuntu-xenial"
+    device.vm.box = SERVER_VM
 
     device.vm.provider :libvirt do |v|
       v.nic_model_type = 'e1000' 
@@ -699,7 +703,7 @@ end
     
     device.vm.hostname = "server101" 
     
-    device.vm.box = "yk0/ubuntu-xenial"
+    device.vm.box = SERVER_VM
 
     device.vm.provider :libvirt do |v|
       v.nic_model_type = 'e1000' 
@@ -737,7 +741,7 @@ end
     
     device.vm.hostname = "server103" 
     
-    device.vm.box = "yk0/ubuntu-xenial"
+    device.vm.box = SERVER_VM
 
     device.vm.provider :libvirt do |v|
       v.nic_model_type = 'e1000' 
@@ -774,7 +778,7 @@ end
     
     device.vm.hostname = "server102" 
     
-    device.vm.box = "yk0/ubuntu-xenial"
+    device.vm.box = SERVER_VM
 
     device.vm.provider :libvirt do |v|
       v.nic_model_type = 'e1000' 
@@ -811,7 +815,7 @@ end
     
     device.vm.hostname = "server104" 
     
-    device.vm.box = "yk0/ubuntu-xenial"
+    device.vm.box = SERVER_VM
 
     device.vm.provider :libvirt do |v|
       v.nic_model_type = 'e1000' 
@@ -848,8 +852,8 @@ end
     
     device.vm.hostname = "internet" 
     
-    device.vm.box = "CumulusCommunity/cumulus-vx"
-    device.vm.box_version = ">= 3.5.1"
+    device.vm.box = VX_VM
+    device.vm.box_version = VX_VERSION
 
     device.vm.provider :libvirt do |v|
       v.memory = 768
