@@ -17,7 +17,7 @@ All my code has been tested on a Ubuntu laptop running either 18.04 or 19.04. If
 |[Ansible](https://www.ansible.com/)| 2.8.4 |
 |[FRRouting](https://frrouting.org/)| 7.2 & version in Cumulus 3.7.x|
 
-The vagrant-libvirt link contains instructions on installing libvirt, QEMU and KVM for various Linux distributions. I use libvirt because it spins up VMs in parallel, making the entire setup a breeze on most modern laptops. For example, on my Lenovo Yoga 920 with an i7-8550U processor and 16GB RAM running Ubuntu 19.04, I can spin up all of the different simulations in less than two minutes, and still have a functioning laptop where I'm browsing, editing code etc. Virtualbox is more universally supported such as on Windows and Macs, but is much slower. Remember to use the Vagrant-vbox file to spin up the simulation using Virtualbox. 
+The vagrant-libvirt link contains instructions on installing libvirt, QEMU and KVM for various Linux distributions. I use libvirt because it spins up VMs in parallel, making the entire setup a breeze on most modern laptops. For example, on my Lenovo Yoga 920 with an i7-8550U processor and 16GB RAM running Ubuntu 19.04, I can spin up all of the different simulations (using Cumulus rather than Arista) in less than two minutes, and still have a functioning laptop i.e. I'm browsing, editing code etc. Virtualbox is more universally supported such as on Windows and Macs, but is much slower. Remember to use the Vagrant-vbox file to spin up the simulation using Virtualbox. 
 
 Even though I tested using Virtualbox 6.0.6, the virtualbox images for Cumulus VX have been built with Virtualbox Guest Additions for 5.1.8. That did not pose a problem for my testing and I don't use shared folders.
 
@@ -33,7 +33,7 @@ The Vagrant boxes used in the simulation include:
 | lipro/ubuntu-16.04-docker-ce      | 1.13.1      |
 | yk0/ubuntu-xenial                 | v201606082  |
 
-I use Ubuntu 16.04 because the playbooks haven't been migrated to use Netplan, the method to configure network interfaces, which is used from Ubuntu 18.04 onwards. I also use the specific Ubuntu boxes as they support libvirt images. In many cases, you can convert a Vagrant virtualbox image into a libvirt image via the Vagrant plugin, [vagrant-mutate](https://github.com/sciurus/vagrant-mutate). The docker-ce Ubuntu box removes the need to install Docker. But you can use any other Ubuntu 1604 image that is supported by libvirt, if you wish.
+I use Ubuntu 16.04 because the playbooks haven't been migrated to use Netplan, the method to configure network interfaces, used in releases starting with Ubuntu 18.04. I also use the specific Ubuntu boxes as they support libvirt images. In many cases, you can convert a Vagrant virtualbox image into a libvirt image via the Vagrant plugin, [vagrant-mutate](https://github.com/sciurus/vagrant-mutate). The docker-ce Ubuntu box removes the need to install Docker. But you can use any other Ubuntu 1604 image that is supported by libvirt, if you wish.
 
 ## Repository Organization
 
@@ -54,25 +54,37 @@ There are three main scenarios (each with its own set of subscenarios) that warr
    2. Distributed Routing with eBGP
    3. OSPF + iBGP with Distributed Routing
    
-Each of these scenarios also has validation playbooks as described in chapter 18. Those validation playbooks have been embedded inside each of the appropriate scenarios.
+Each of these scenarios also has validation playbooks as described in chapter 18. Those validation playbooks have been embedded inside each of the appropriate scenarios. 
 
-**The topologies used in this github differ from the ones used in the deployment chapters in the book**. They've been simplified and expanded. Simplified by reducing the number of servers to enable the simulation to run on a 16GB RAM laptop. Expanded by using a generic single attach and a dual-attach topology for all scenarios described in the book.
+**The topologies used in this github differ from the ones used in the deployment chapters in the book**. They've been simplified and expanded. Simplified by reducing the number of servers to enable the simulation to run on a 16GB RAM laptop. Expanded by using a generic single attach and a dual-attach topology for all scenarios described in the book. But, I've stayed true to the IP addresses and ASNs used in the book. Only in the case of EVPN have the servers under each pair of switches been put in different VLANs to demonstrate multiple VNIs. I've also stayed true to the interface names used in the book and in this repository. Thus, the configuration files should look mostly alike.
 
-Single attached servers is common in larger networks while dual-attached servers is common in enterprise and smaller networks.
+Singly attached servers is common in larger networks while dual-attached servers is common in enterprise and smaller networks.
 
 The dual-attached server topology used across all the scenarios looks like this:
 
 ![Dual-Attach Topology](./dual-attach-topo.png)
 
-The single-attached server topology used across all the scenarios looks like this:
+The singly-attached server topology used across all the scenarios looks like this:
 
 ![Single-Attach Topology](./single-attach-topo.png)
 
+In the singly-attached servers topology, the peerlinks between the leaves exist, but are not used and CLAG is not configured.
+
+## Starting/Stopping the Topology
+
+`vagrant` doesn't take a filename as an option and so depending on the hypervisor you're choosing - KVM/libvirt or Virtualbox - you must copy the appropriate Vagrantfile to Vagrantfile. Thus, if you're using KVM, copy Vagrantfile-kvm to Vagrantfile.
+
+Once you've the file called `Vagrantfile`, you start the topology with `vagrant up`. If you want to spin up only a subset of the nodes, you can do so by specifying the nodes you want to spin up. For example, if you wish to spin up the network with just the leaves and spines without the servers and edges, you can do so using `vagrant up spine01 spine02 leaf01 leaf02 leaf03 leaf04`. The playbooks should all run with the limited topology too, but you'll see errors (only once) for the nodes that cannot be found.
+
+To destroy the topology, you run `vagrant destroy -f`. To destroy a subset of nodes, you specify the node names to destroy. For example, run `vagrant destroy -f leaf03 leaf04` to destroy only the nodes leaf03 and leaf04. 
 
 ## Running the Playbooks
 
-We use Ansible to run the playbooks. After installing Ansible, you can deploy the configuration via the command `ansible-playbook -b deploy.yml`.
+We use Ansible to run the playbooks. After starting the topology, you can deploy the configuration via the command `ansible-playbook -b deploy.yml`.
 You can switch between subscenarios by running the `reset.yml` playbook within each of the scenarios before running the `deploy.yml` playbook.
 
 The `-b` option is to inform Ansible to execute the commands as root.
 
+The playbooks for each of the scenarios uses Ansible as a dumb file copier. The code samples under the Ansible directory provides options for the dual attach topology and a single scenario with different levels of sophistication. 
+
+As this book is vendor-neutral, with demonstrations and samples using specific vendors owing to my familiarity and the availability of Vagrant boxes, I've not followed the methodology of writing playbooks dictated by any vendor. I've tried to use the most easily understandable and open source code as much as possible. Specifically in the case of Cumulus, all FRR configuration is viewable as `/etc/frr/frr.conf`. All bridging (L2) and VXLAN configuration is under `/etc/network/interfaces` because FRR does not support any L2 or VXLAN configuration as of version 7.2. You can access FRR's shell via the `vtysh` command. vtysh provides network operators unfamiliar with Linux with a shell that's more familiar. Cumulus-familiar network operators can also use the NCLU commands available under the `net` family of commands.
