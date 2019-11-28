@@ -1,0 +1,22 @@
+auto all
+
+iface lo inet loopback
+
+iface mgmt
+  address 127.0.0.1/8
+  vrf-table auto
+
+iface eth0 inet dhcp
+  vrf mgmt
+
+
+# uplinks
+iface swp1
+
+iface swp2
+
+# hosts
+iface swp5
+
+iface swp6
+

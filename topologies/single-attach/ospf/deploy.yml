@@ -33,9 +33,9 @@
     # Release supported by this demo.
     - name: Verify Minimum Software Version
       assert:
-        that: "{{ansible_lsb.release | version_compare('3.5', '>=') }}"
+        that: "{{ansible_lsb.release is version('3.7', '>=') }}"
         msg: >
-          "Cumulus Linux version must be 3.5 or later.
+          "Cumulus Linux version must be 3.7 or later.
           Version {{ansible_lsb.release}} detected"
 
     - name: Turn off SSH rev DNS lookup
@@ -82,8 +82,29 @@
     - name: Restart ssh
       service: name=sshd state=restarted
 
+    - name: Copy sysctl
+      copy: src=config-files/{{scenario}}/{{ansible_hostname}}/99-frr.conf dest=/etc/sysctl.d/
+      when: scenario=="docker"
 
+    - name: Source sysctl
+      command: sysctl -p /etc/sysctl.d/99-frr.conf
+      when: scenario=="docker"
 
   roles:
-    - copy-int-reboot-servers
-    
+    - role: copy-int-reboot-servers
+    - role: install_docker
+      when: scenario=="docker"
+    - role: install_frr
+      when: scenario=="docker"
+    - role: copy_frr_daemons
+      when: scenario=="docker"
+    - role: restart_switches
+      when: scenario=="docker"
+
+  post_tasks:
+    - name: Delete default route pointing out mgmt interface
+      command: ip ro del default
+      become: yes
+      when: scenario=="docker"
+        
+      
