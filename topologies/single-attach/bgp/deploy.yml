@@ -91,6 +91,8 @@
       when: scenario=="docker"
 
   roles:
+    - role: enable_ipv6
+      when: scenario=="docker"
     - role: copy-int-reboot-servers
     - role: install_docker
       when: scenario=="docker"
@@ -102,6 +104,8 @@
       when: scenario=="docker"
 
   post_tasks:
+    - name: Pull docker alpine image as default via eth0 is deleted
+      command: docker pull alpine
     - name: Delete default route pointing out mgmt interface
       command: ip ro del default
       become: yes
