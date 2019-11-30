@@ -102,6 +102,8 @@
       when: scenario=="docker"
 
   post_tasks:
+    - name: Pull docker alpine image as default via eth0 is deleted
+      command: docker pull alpine
     - name: Delete default route pointing out mgmt interface
       command: ip ro del default
       become: yes
