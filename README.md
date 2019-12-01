@@ -3,7 +3,7 @@ Code repository for the O'Reilly book 'Cloud Native Data Center Networking'. You
 
 ![Book Cover](./cdcn-cover.jpeg)
 
-I have not setup all the relevant code from the book yet, it should be done before the end of November 2019. 
+The github repo is not fully done yet, though a large portion of it is operational. I discuss what is working and what is not towards the end of this README.
 
 All my code has been tested on a Ubuntu laptop running either 18.04 or 19.04. If you experience an issue, please file a ticket and I'll do what I can to help, no promises. If you send me a fix via a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request), I'll be grateful and incorporate the fix as quickly as I can.
 
@@ -30,10 +30,9 @@ The Vagrant boxes used in the simulation include:
 | Vagrant Box                       | Version     |
 |-----------------------------------|-------------|
 | CumulusCommunity/cumulus-vx       | > 3.6, < 4.0|
-| lipro/ubuntu-16.04-docker-ce      | 1.13.1      |
-| yk0/ubuntu-xenial                 | v201606082  |
+| generic/ubuntu1604                | latest      |
 
-I use Ubuntu 16.04 because the playbooks haven't been migrated to use Netplan, the method to configure network interfaces, used in releases starting with Ubuntu 18.04. I also use the specific Ubuntu boxes as they support libvirt images. In many cases, you can convert a Vagrant virtualbox image into a libvirt image via the Vagrant plugin, [vagrant-mutate](https://github.com/sciurus/vagrant-mutate). The docker-ce Ubuntu box removes the need to install Docker. But you can use any other Ubuntu 1604 image that is supported by libvirt, if you wish.
+I use Ubuntu 16.04 because the playbooks haven't been migrated to use Netplan, the method to configure network interfaces, used in releases starting with Ubuntu 18.04. I also use the specific Ubuntu boxes as they support libvirt images. In many cases, you can convert a Vagrant virtualbox image into a libvirt image via the Vagrant plugin, [vagrant-mutate](https://github.com/sciurus/vagrant-mutate). The docker-ce Ubuntu box removes the need to install Docker. But you can use any other Ubuntu 1604 image that is supported by libvirt, if you wish. If you choose to use a different Ubuntu image than generic/ubuntu1604, then remember to change the name at the top of your Vagrantfile.
 
 ## Repository Organization
 
@@ -80,11 +79,37 @@ To destroy the topology, you run `vagrant destroy -f`. To destroy a subset of no
 
 ## Running the Playbooks
 
-We use Ansible to run the playbooks. After starting the topology, you can deploy the configuration via the command `ansible-playbook -b deploy.yml`.
-You can switch between subscenarios by running the `reset.yml` playbook within each of the scenarios before running the `deploy.yml` playbook.
+We use Ansible to run the playbooks. After starting the topology, go to the appropriate playbook directory: ospf, bgp or evpn. In that directory, you can deploy the configuration via the command `ansible-playbook -b deploy.yml`.
+You can switch between subscenarios by running the `reset.yml` playbook within each of the scenarios before running the `deploy.yml` playbook. 
+
+The names of the three scenarios supported by ospf and bgp are: numbered, unnumbered, docker. The first configures the switches to run the numbered version of the protocol and the second, the unnumbered version. The third installs docker and FRR and is used to test routing on the host.
 
 The `-b` option is to inform Ansible to execute the commands as root.
+
+By default, the unnumbered version is run. To run any of the non-default versions, you must pass the name via an extra option when invoking `ansible-playbook`. For example, to run the numbered version, you'd run the playbook as: `ansible-playbook -b -e 'scenario=numbered' deploy.yml`.
+
+The docker scenario takes longer to finish as it requires the installation of both docker and FRR on each server.
 
 The playbooks for each of the scenarios uses Ansible as a dumb file copier. The code samples under the Ansible directory provides options for the dual attach topology and a single scenario with different levels of sophistication. 
 
 As this book is vendor-neutral, with demonstrations and samples using specific vendors owing to my familiarity and the availability of Vagrant boxes, I've not followed the methodology of writing playbooks dictated by any vendor. I've tried to use the most easily understandable and open source code as much as possible. Specifically in the case of Cumulus, all FRR configuration is viewable as `/etc/frr/frr.conf`. All bridging (L2) and VXLAN configuration is under `/etc/network/interfaces` because FRR does not support any L2 or VXLAN configuration as of version 7.2. You can access FRR's shell via the `vtysh` command. vtysh provides network operators unfamiliar with Linux with a shell that's more familiar. Cumulus-familiar network operators can also use the NCLU commands available under the `net` family of commands.
+
+### When to Ignore Errors in Running the Playbook
+
+When you run the reset.yml playbook, the reload networking task on switches fails with a fatal UNREACHABLE error. Ignore this as this is caused by switching the eth0 interface from mgmt VRF to default VRF.
+
+## What Scenarios Are Working and Tested
+
+The status as of Nov 30, 2019 is as follows. 
+
+The following dual-attached topologies are working:
+
+* OSPF and BGP with all subscenarios. The exit, firewall and edge nodes are not configured in any of the subscenarios of each of these scenarios.
+
+* EVPN distributed is working. All nodes including exit, edge and firewall nodes are configured and working.
+
+The following single-attached topologies are working:
+
+* OSPF and BGP with all subscenarios. The exit, firewall and edge nodes are not configured in any of the subscenarios of each of these scenarios.
+
+The remaining scenario and subscenarios are being worked on and should be up in the next few days. Validation playbooks, Playbooks illustrating better use of Ansible etc. are also not ready and will be added after adding support for the remaining scenarios and subscenarios.
