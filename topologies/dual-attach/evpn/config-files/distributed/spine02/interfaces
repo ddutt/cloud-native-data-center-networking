@@ -1,65 +1,21 @@
-# Loopback interface
-auto lo
+auto all
+
 iface lo inet loopback
-  address 10.0.0.22/32
-  alias loopback interface
 
 # Management interface
-auto eth0
+
 iface eth0 inet dhcp
-    alias management interface
     vrf mgmt
 
-auto mgmt
 iface mgmt
     address 127.0.0.1/8
     vrf-table auto
 
-# Port to Leaf01
-auto swp1
+# downlinks
 iface swp1
-  mtu 9216
-  alias to Leaf01
-
-# Port to Leaf02
-auto swp2
 iface swp2
-  mtu 9216
-  alias to Leaf02
-
-# Port to Leaf03
-auto swp3
 iface swp3
-  mtu 9216
-  alias to Leaf03
-
-# Port to Leaf04
-auto swp4
 iface swp4
-  mtu 9216
-  alias to Leaf04
-
-# Port to Exit01
-auto swp29
-iface swp29
-  mtu 9216
-  alias to Exit01
-
-# Port to Exit02
-auto swp30
-iface swp30
-  mtu 9216
-  alias to Exit02
-
-# Port to Spine02
-auto swp31
-iface swp31
-  mtu 9216
-  alias to Spine02
-
-# Port to Spine02
-auto swp32
-iface swp32
-  mtu 9216
-  alias to Spine02
+iface swp5
+iface swp6
 
