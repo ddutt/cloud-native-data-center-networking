@@ -8,10 +8,12 @@
       copy: src=reset-files/daemons dest=/etc/frr
     - name: Remove FRR config
       copy: src=reset-files/frr.conf dest=/etc/frr
-    - name: reload networking
-      command: ifreload -a
     - name: reload frr
       service: name=frr state=restarted
+    # ignore unreachable as we switch from mgmt vrf to default vrf
+    - name: reload networking
+      command: ifreload -a
+      ignore_unreachable: yes
 
 - hosts: servers
   become: yes
