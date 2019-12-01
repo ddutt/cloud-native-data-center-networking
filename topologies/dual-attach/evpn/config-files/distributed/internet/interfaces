@@ -1,0 +1,17 @@
+auto lo
+iface lo inet loopback
+	address 10.0.0.253/32
+	address 172.16.1.1/32
+
+auto eth0
+iface eth0 inet dhcp
+
+auto swp1
+iface swp1
+
+auto swp2
+iface swp2
+
+auto swp48
+iface swp48 inet dhcp
+

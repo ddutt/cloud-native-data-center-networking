@@ -1,0 +1,30 @@
+---
+  - name: Add docker repo key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+
+  - name: Add docker repo
+    apt_repository:
+      repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+      state: present
+
+  - name: Add docker CE
+    apt:
+      name: docker-ce
+      state: present
+      force_apt_get: True
+
+  - name: Add user to docker group
+    user:
+      name: vagrant
+      group: docker
+      append: True
+  
+
+  - name: copy docker bridge IP setting
+    copy: src=config-files/{{scenario}}/{{ansible_hostname}}/daemon.json dest=/etc/docker/
+
+  - name: Restart docker
+    service: name=docker state=restarted
+
+    

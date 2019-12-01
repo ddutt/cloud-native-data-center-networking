@@ -1,0 +1,124 @@
+auto all
+
+auto lo
+iface lo inet loopback
+  address 10.0.0.13/32
+  vxlan-local-tunnelip 10.0.0.13
+  clagd-vxlan-anycast-ip 10.0.0.134
+
+
+auto mgmt
+iface mgmt
+  address 127.0.0.1/8
+  vrf-table auto
+
+auto eth0
+iface eth0 inet dhcp
+  vrf mgmt
+
+
+# uplinks
+iface swp1
+
+iface swp2
+
+# uplinks
+iface swp3
+  post-up ip link set promisc on dev swp3
+  
+
+iface swp4
+  post-up ip link set promisc on dev swp4
+
+iface peerlink
+  bond-slaves swp3 swp4
+
+iface peerlink.4094
+  address 169.254.1.1/30
+  clagd-peer-ip 169.254.1.2
+  clagd-backup-ip 10.0.0.14
+  clagd-sys-mac 44:39:39:ff:40:94
+  clagd-priority 100
+
+# bridge to hosts
+iface swp5
+  post-up ip link set promisc on dev swp5
+
+iface swp6
+  post-up ip link set promisc on dev swp6
+
+iface bond01
+  bond-slaves swp5
+  bridge-access 13
+  clag-id 1
+
+iface bond02
+  bond-slaves swp6
+  bridge-access 24
+  clag-id 2
+
+# Define the bridge for STP
+auto bridge
+iface bridge
+  bridge-vlan-aware yes
+  # bridge-ports includes all ports related to VxLAN and CLAG.
+  # does not include the Peerlink.4094 subinterface
+  bridge-ports bond01 bond02 peerlink vni13 vni24 vxlan4001
+  bridge-vids 13 24
+
+# VxLAN Tunnel for Server1-Server3 (Vlan 13)
+auto vni13
+iface vni13
+  mtu 9000
+  vxlan-id 13
+  bridge-access 13
+  bridge-learning off
+
+#VxLAN Tunnel for Server2-Server4 (Vlan 24)
+auto vni24
+iface vni24
+  mtu 9000
+  vxlan-id 24
+  bridge-access 24
+  bridge-learning off
+  bridge-arp-nd-suppress on
+
+auto vxlan4001
+iface vxlan4001
+    vxlan-id 104001
+    bridge-learning off
+    bridge-access 4001
+
+auto evpn-vrf
+iface evpn-vrf
+   vrf-table auto
+
+#Tenant SVIs - anycast GW
+
+auto vlan13
+iface vlan13
+    mtu 9000
+    address 172.16.1.13/24
+    address-virtual 44:39:39:ff:00:13 172.16.1.1/24
+    vlan-id 13
+    vlan-raw-device bridge
+    vrf evpn-vrf
+
+auto vlan24
+iface vlan24
+    mtu 9000
+    address 172.16.2.13
+    address-virtual 44:39:39:ff:00:24 172.16.2.1/24
+    vlan-id 24
+    vlan-raw-device bridge
+    vrf evpn-vrf
+
+#L3 VLAN interface per tenant (for L3 VNI)
+
+auto vlan4001
+iface vlan4001
+    hwaddress 44:39:39:FF:40:94
+    vlan-id 4001
+    vlan-raw-device bridge
+    vrf evpn-vrf
+

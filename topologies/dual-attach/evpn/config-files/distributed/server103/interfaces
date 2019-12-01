@@ -1,0 +1,33 @@
+## Configured by Ansible
+#########
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet manual
+  bond-master bond0
+  # Required for Vagrant
+  post-up ip link set promisc on dev eth1
+
+auto eth2
+iface eth2 inet manual
+  bond-master bond0
+  # Required for Vagrant
+  post-up ip link set promisc on dev eth2
+
+auto bond0
+iface bond0 inet static
+  mtu 9000
+  bond-mode 802.3ad
+  bond-miimon 100
+  bond-lacp-rate 1
+  bond-min-links 1
+  bond-xmit-hash-policy layer3+4
+  bond-slaves eth1 eth2
+  address 172.16.1.103/24
+  post-up ip route add 172.16.0.0/16 via 172.16.1.1
+
