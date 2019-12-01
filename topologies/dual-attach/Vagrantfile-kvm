@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
       "servers" => ["server10[1:4]"],
       "edge" => ["internet"],
       "firewall" => ["edge01"],
-      "network:children" => ["leaf", "spine", "exit", "edge"],
+      "network:children" => ["leaf", "spine", "exit", "edge", "firewall"],
     }
   end
 
@@ -64,7 +64,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '18021',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '19021',
-            :libvirt__iface_name => 'swp51',
+            :libvirt__iface_name => 'swp1',
             auto_config: false
       # link for swp2 --> spine02:swp6
       device.vm.network "private_network",
@@ -74,7 +74,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '18053',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '19053',
-            :libvirt__iface_name => 'swp52',
+            :libvirt__iface_name => 'swp2',
             auto_config: false
       # link for swp3 --> exit01:swp3
       device.vm.network "private_network",
@@ -84,7 +84,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '18030',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '19030',
-            :libvirt__iface_name => 'swp45',
+            :libvirt__iface_name => 'swp3',
             auto_config: false
       # link for swp4 --> exit01:swp4
       device.vm.network "private_network",
@@ -94,7 +94,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '19030',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '18030',
-            :libvirt__iface_name => 'swp46',
+            :libvirt__iface_name => 'swp4',
             auto_config: false
       # link for swp5 --> edge01:eth2
       device.vm.network "private_network",
@@ -104,7 +104,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '19007',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '18007',
-            :libvirt__iface_name => 'swp1',
+            :libvirt__iface_name => 'swp5',
             auto_config: false
       # link for swp6 --> internet:swp2
       device.vm.network "private_network",
@@ -114,7 +114,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '19039',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '18039',
-            :libvirt__iface_name => 'swp44',
+            :libvirt__iface_name => 'swp6',
             auto_config: false
   end
   ##### DEFINE VM for exit01 #####
@@ -140,7 +140,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '18006',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '19006',
-            :libvirt__iface_name => 'swp51',
+            :libvirt__iface_name => 'swp1',
             auto_config: false
       # link for swp2 --> spine02:swp5
       device.vm.network "private_network",
@@ -150,7 +150,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '18056',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '19056',
-            :libvirt__iface_name => 'swp52',
+            :libvirt__iface_name => 'swp2',
             auto_config: false
       # link for swp3 --> exit01:swp3
       device.vm.network "private_network",
@@ -160,7 +160,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '18043',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '19043',
-            :libvirt__iface_name => 'swp45',
+            :libvirt__iface_name => 'swp3',
             auto_config: false
       # link for swp4 --> exit01:swp4
       device.vm.network "private_network",
@@ -170,7 +170,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '19043',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '18043',
-            :libvirt__iface_name => 'swp46',
+            :libvirt__iface_name => 'swp4',
             auto_config: false
       # link for swp5 --> edge01:eth1
       device.vm.network "private_network",
@@ -180,7 +180,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '19046',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '18046',
-            :libvirt__iface_name => 'swp1',
+            :libvirt__iface_name => 'swp5',
             auto_config: false
       # link for swp6 --> internet:swp1
       device.vm.network "private_network",
@@ -190,7 +190,7 @@ Vagrant.configure("2") do |config|
             :libvirt__tunnel_local_port => '19005',
             :libvirt__tunnel_ip => '127.0.0.1',
             :libvirt__tunnel_port => '18005',
-            :libvirt__iface_name => 'swp44',
+            :libvirt__iface_name => 'swp6',
             auto_config: false
 
   end
