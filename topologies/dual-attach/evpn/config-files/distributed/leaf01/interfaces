@@ -57,10 +57,6 @@ iface bond02
   bridge-access 24
   clag-id 2
 
-iface vlan10
-     vlan-id 10
-     vlan-raw-device bridge
-
 # Define the bridge for STP
 auto bridge
 iface bridge
