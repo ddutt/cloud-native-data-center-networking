@@ -53,11 +53,13 @@
          path: /etc/netd.conf
          regexp: '^users_with_show = root, cumulus'
          line: users_with_show = root, cumulus, vagrant
+      when: ansible_hostname  != "edge01"
       tags:
          netd
 
     - name: Restart netd
       service: name=netd state=restarted
+      when: ansible_hostname  != "edge01"
       tags:
          netd
 
@@ -91,6 +93,8 @@
       when: scenario=="docker"
 
   roles:
+    - role: enable_ipv6
+      when: scenario=="docker"
     - role: copy-int-reboot-servers
     - role: install_docker
       when: scenario=="docker"

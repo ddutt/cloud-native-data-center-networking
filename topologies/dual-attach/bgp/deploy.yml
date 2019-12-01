@@ -53,11 +53,13 @@
          path: /etc/netd.conf
          regexp: '^users_with_show = root, cumulus'
          line: users_with_show = root, cumulus, vagrant
+      when: ansible_hostname  != "edge01"
       tags:
          netd
 
     - name: Restart netd
       service: name=netd state=restarted
+      when: ansible_hostname  != "edge01"
       tags:
          netd
 
@@ -106,7 +108,7 @@
   post_tasks:
     - name: Pull docker alpine image as default via eth0 is deleted
       command: docker pull alpine
-      when: scenario=="docker"
+      when: scenario=="docker"      
     - name: Delete default route pointing out mgmt interface
       command: ip ro del default
       become: yes
