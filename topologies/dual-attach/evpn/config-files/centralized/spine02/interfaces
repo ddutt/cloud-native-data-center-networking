@@ -13,9 +13,15 @@ iface mgmt
 
 # downlinks
 iface swp1
+    mtu 9216
 iface swp2
+    mtu 9216
 iface swp3
+    mtu 9216
 iface swp4
+    mtu 9216
 iface swp5
+    mtu 9216
 iface swp6
+    mtu 9216
 

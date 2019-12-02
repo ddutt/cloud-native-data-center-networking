@@ -42,7 +42,6 @@ iface swp6
 	vrf internet-vrf
 
 # VxLAN Tunnel for Server1-Server3 (Vlan 13)
-auto vni13
 iface vni13
   mtu 9000
   vxlan-id 13
@@ -50,7 +49,6 @@ iface vni13
   bridge-learning off
 
 #VxLAN Tunnel for Server2-Server4 (Vlan 24)
-auto vni24
 iface vni24
   mtu 9000
   vxlan-id 24
@@ -58,7 +56,6 @@ iface vni24
   bridge-learning off
   bridge-arp-nd-suppress on
 
-auto vlan13
 iface vlan13
     mtu 9000
     address 172.16.1.12/24
@@ -67,7 +64,6 @@ iface vlan13
     vlan-raw-device bridge
     vrf evpn-vrf
 
-auto vlan24
 iface vlan24
     mtu 9000
     address 172.16.2.12/24

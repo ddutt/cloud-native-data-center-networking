@@ -1,36 +1,38 @@
 auto all
 
-auto lo
 iface lo inet loopback
   address 10.0.0.12/32
   vxlan-local-tunnelip 10.0.0.12
   clagd-vxlan-anycast-ip 10.0.0.112
 
 
-auto mgmt
 iface mgmt
   address 127.0.0.1/8
   vrf-table auto
 
-auto eth0
 iface eth0 inet dhcp
   vrf mgmt
 
 
 # uplinks
 iface swp1
-
+  mtu 9216
+  
 iface swp2
+  mtu 9216
 
 # uplinks
 iface swp3
+  mtu 9000
   post-up ip link set promisc on dev swp3
   
 
 iface swp4
+  mtu 9000
   post-up ip link set promisc on dev swp4
 
 iface peerlink
+  mtu 9000
   bond-slaves swp3 swp4
 
 iface peerlink.4094
@@ -42,23 +44,26 @@ iface peerlink.4094
 
 # bridge to hosts
 iface swp5
+  mtu 9000
   post-up ip link set promisc on dev swp5
 
 iface swp6
+  mtu 9000
   post-up ip link set promisc on dev swp6
 
 iface bond01
+  mtu 9000
   bond-slaves swp5
   bridge-access 13
   clag-id 1
 
 iface bond02
+  mtu 9000
   bond-slaves swp6
   bridge-access 24
   clag-id 2
 
 # Define the bridge for STP
-auto bridge
 iface bridge
   bridge-vlan-aware yes
   # bridge-ports includes all ports related to VxLAN and CLAG.
@@ -67,7 +72,6 @@ iface bridge
   bridge-vids 13 24
 
 # VxLAN Tunnel for Server1-Server3 (Vlan 13)
-auto vni13
 iface vni13
   mtu 9000
   vxlan-id 13
@@ -75,7 +79,6 @@ iface vni13
   bridge-learning off
 
 #VxLAN Tunnel for Server2-Server4 (Vlan 24)
-auto vni24
 iface vni24
   mtu 9000
   vxlan-id 24
@@ -83,19 +86,17 @@ iface vni24
   bridge-learning off
   bridge-arp-nd-suppress on
 
-auto vxlan4001
 iface vxlan4001
+    mtu 9216
     vxlan-id 104001
     bridge-learning off
     bridge-access 4001
 
-auto evpn-vrf
 iface evpn-vrf
    vrf-table auto
 
 #Tenant SVIs - anycast GW
 
-auto vlan13
 iface vlan13
     mtu 9000
     address 172.16.1.12/24
@@ -104,7 +105,6 @@ iface vlan13
     vlan-raw-device bridge
     vrf evpn-vrf
 
-auto vlan24
 iface vlan24
     mtu 9000
     address 172.16.2.12/24
@@ -115,8 +115,8 @@ iface vlan24
 
 #L3 VLAN interface per tenant (for L3 VNI)
 
-auto vlan4001
 iface vlan4001
+    mtu 9216
     hwaddress 44:39:39:FF:40:94
     vlan-id 4001
     vlan-raw-device bridge
