@@ -100,13 +100,13 @@ When you run the reset.yml playbook, the reload networking task on switches fail
 
 ## What Scenarios Are Working and Tested
 
-The status as of Nov 30, 2019 is as follows. 
+The status as of Nov 30, 2019 evening is as follows. 
 
 The following dual-attached topologies are working:
 
-* OSPF and BGP with all subscenarios. The exit, firewall and edge nodes are not configured in any of the subscenarios of each of these scenarios.
+* OSPF with all subscenarios. The exit, firewall and edge nodes are not configured in any of the subscenarios of each of these scenarios.
 
-* EVPN distributed is working. All nodes including exit, edge and firewall nodes are configured and working.
+* BGP and EVPN all subscenarios. All nodes including exit, edge and firewall nodes are configured and working.
 
 The following single-attached topologies are working:
 
