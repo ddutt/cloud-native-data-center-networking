@@ -92,6 +92,8 @@ The docker scenario takes longer to finish as it requires the installation of bo
 
 The playbooks for each of the scenarios uses Ansible as a dumb file copier. The code samples under the Ansible directory provides options for the dual attach topology and a single scenario with different levels of sophistication. 
 
+A common way to test if the configuration is working correctly is to test reachability between servers and from the server to the internet. The internet facing router is provided with an address 172.16.253.1 that can be used to ping from the servers to check that the path is correctly plumbed all the way to the edge of the data center. 
+
 As this book is vendor-neutral, with demonstrations and samples using specific vendors owing to my familiarity and the availability of Vagrant boxes, I've not followed the methodology of writing playbooks dictated by any vendor. I've tried to use the most easily understandable and open source code as much as possible. Specifically in the case of Cumulus, all FRR configuration is viewable as `/etc/frr/frr.conf`. All bridging (L2) and VXLAN configuration is under `/etc/network/interfaces` because FRR does not support any L2 or VXLAN configuration as of version 7.2. You can access FRR's shell via the `vtysh` command. vtysh provides network operators unfamiliar with Linux with a shell that's more familiar. Cumulus-familiar network operators can also use the NCLU commands available under the `net` family of commands.
 
 ### When to Ignore Errors in Running the Playbook
