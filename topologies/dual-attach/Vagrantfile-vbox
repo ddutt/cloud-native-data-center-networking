@@ -3,7 +3,7 @@ ENV['VAGRANT_DEFAULT_PROVIDER'] = 'virtualbox'
 
 SERVER_VM= "generic/ubuntu1604"
 VX_VM = "CumulusCommunity/cumulus-vx"
-VX_VERSION = "~> 3.7.0"
+VX_VERSION = "~> 3.7.11"
 
 Vagrant.require_version ">= 2.0.2"
 
@@ -47,22 +47,22 @@ Vagrant.configure("2") do |config|
 
        # NETWORK INTERFACES
        # link for swp1 --> spine01:swp6
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e02", auto_config: false , :mac => "443839000021"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e02", auto_config: false
        
        # link for swp2 --> spine02:swp6
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e02", auto_config: false , :mac => "443839000055"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e02", auto_config: false
        
        # link for swp3 --> exit01:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e021", auto_config: false , :mac => "443839000030"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e021", auto_config: false
        
        # link for swp4 --> exit01:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e022", auto_config: false , :mac => "443839000031"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e022", auto_config: false
        
        # link for swp5 --> edge01:eth2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02f01", auto_config: false , :mac => "44383900000c"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02f01", auto_config: false 
        
        # link for swp6 --> internet:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02i", auto_config: false , :mac => "44383900003f"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02i", auto_config: false 
        
 
        device.vm.provider "virtualbox" do |vbox|
@@ -95,22 +95,22 @@ Vagrant.configure("2") do |config|
 
        # NETWORK INTERFACES
        # link for swp1 --> spine01:swp5
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e01", auto_config: false , :mac => "443839000009"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e01", auto_config: false 
 
        # link for swp2 --> spine02:swp5
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e01", auto_config: false , :mac => "44383900005a"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e01", auto_config: false 
 
        # link for swp3 --> exit02:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e021", auto_config: false , :mac => "443839000044"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e021", auto_config: false 
 
        # link for swp4 --> exit02:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e022", auto_config: false , :mac => "443839000045"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01e022", auto_config: false 
 
        # link for swp5 --> edge01:eth1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01f01", auto_config: false , :mac => "44383900004b"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01f01", auto_config: false 
 
        # link for swp6 --> internet:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01i", auto_config: false , :mac => "443839000008"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01i", auto_config: false 
 
        device.vm.provider "virtualbox" do |vbox|
          vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
@@ -144,22 +144,22 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for swp1 --> leaf01:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l01", auto_config: false , :mac => "443839000025"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l01", auto_config: false 
        
        # link for swp2 --> leaf02:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l02", auto_config: false , :mac => "44383900005e"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l02", auto_config: false 
        
        # link for swp3 --> leaf03:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l03", auto_config: false , :mac => "44383900001c"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l03", auto_config: false 
        
        # link for swp4 --> leaf04:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l04", auto_config: false , :mac => "443839000047"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l04", auto_config: false 
        
        # link for swp29 --> exit02:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e02", auto_config: false , :mac => "443839000056"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e02", auto_config: false 
        
        # link for swp30 --> exit01:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e01", auto_config: false , :mac => "44383900005b"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02e01", auto_config: false 
        
        device.vm.provider "virtualbox" do |vbox|
          vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
@@ -191,22 +191,22 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for swp1 --> leaf01:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l01", auto_config: false , :mac => "443839000054"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l01", auto_config: false 
        
        # link for swp2 --> leaf02:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l02", auto_config: false , :mac => "443839000029"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l02", auto_config: false 
        
        # link for swp3 --> leaf03:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l03", auto_config: false , :mac => "443839000050"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l03", auto_config: false 
        
        # link for swp4 --> leaf04:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l04", auto_config: false , :mac => "44383900003c"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l04", auto_config: false 
        
        # link for swp29 --> exit02:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e02", auto_config: false , :mac => "443839000022"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e02", auto_config: false 
        
        # link for swp30 --> exit01:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e01", auto_config: false , :mac => "44383900000a"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01e01", auto_config: false 
        
        device.vm.provider "virtualbox" do |vbox|
          vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
@@ -240,22 +240,22 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for swp1 --> spine01:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l04", auto_config: false , :mac => "44383900003b"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l04", auto_config: false 
        
        # link for swp2 --> spine02:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l04", auto_config: false , :mac => "443839000046"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l04", auto_config: false 
        
-       # link for swp3 --> leaf04:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04l041", auto_config: false , :mac => "443839000019"
+       # link for swp3 --> leaf03:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l041", auto_config: false 
        
-       # link for swp4 --> leaf04:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04l042", auto_config: false , :mac => "44383900001a"
+       # link for swp4 --> leaf03:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04l042", auto_config: false 
        
        # link for swp5 --> server103:eth2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h03", auto_config: false , :mac => "44383900005c"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h03", auto_config: false 
        
        # link for swp6 --> server104:eth2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h04", auto_config: false , :mac => "44383900002c"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h04", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -289,22 +289,22 @@ Vagrant.configure("2") do |config|
        # NETWORK INTERFACES
        
        # link for swp1 --> spine01:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l02", auto_config: false , :mac => "443839000028"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l02", auto_config: false 
        
        # link for swp2 --> spine02:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l02", auto_config: false , :mac => "44383900005d"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l02", auto_config: false 
        
        # link for swp3 --> leaf02:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l021", auto_config: false , :mac => "44383900000d"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l021", auto_config: false 
        
        # link for swp4 --> leaf02:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l022", auto_config: false , :mac => "44383900000e"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l022", auto_config: false 
 
        # link for swp5 --> server101:eth2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h01", auto_config: false , :mac => "443839000015"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h01", auto_config: false 
        
        # link for swp6 --> server102:eth2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h02", auto_config: false , :mac => "443839000018"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h02", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -335,23 +335,23 @@ Vagrant.configure("2") do |config|
        device.vm.synced_folder ".", "/vagrant", disabled: true
        
        # link for swp1 --> spine01:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l03", auto_config: false , :mac => "44383900004f"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l03", auto_config: false 
        
        # link for swp2 --> spine02:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l03", auto_config: false , :mac => "44383900001b"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l03", auto_config: false 
        
-       # link for swp3 --> leaf03:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l041", auto_config: false , :mac => "44383900002a"
+       # link for swp3 --> leaf04:swp3
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l041", auto_config: false 
        
-       # link for swp4 --> leaf03:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l042", auto_config: false , :mac => "44383900002b"
+       # link for swp4 --> leaf04:swp4
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03l042", auto_config: false 
        
        # NETWORK INTERFACES
        # link for swp5 --> server103:eth1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h03", auto_config: false , :mac => "443839000023"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h03", auto_config: false 
        
        # link for swp6 --> server104:eth1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h04", auto_config: false , :mac => "44383900001f"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h04", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -384,22 +384,22 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for swp1 --> spine01:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l01", auto_config: false , :mac => "443839000053"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s01l01", auto_config: false 
        
        # link for swp2 --> spine02:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l01", auto_config: false , :mac => "443839000024"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_s02l01", auto_config: false 
        
        # link for swp3 --> leaf01:swp3
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l021", auto_config: false , :mac => "44383900001d"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l021", auto_config: false 
        
        # link for swp4 --> leaf01:swp4
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l022", auto_config: false , :mac => "44383900001e"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01l022", auto_config: false 
        
        # link for swp5 --> server101:eth1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h01", auto_config: false , :mac => "443839000003"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h01", auto_config: false 
        
        # link for swp6 --> server102:eth1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h02", auto_config: false , :mac => "443839000014"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h02", auto_config: false 
        
        device.vm.provider "virtualbox" do |vbox|
          vbox.customize ['modifyvm', :id, '--nicpromisc2', 'allow-all']
@@ -431,9 +431,9 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for eth1 --> exit01:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01f01", auto_config: false , :mac => "44383900004a"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01f01", auto_config: false 
        # link for eth2 --> exit02:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02f01", auto_config: false , :mac => "44383900000b"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02f01", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -466,10 +466,10 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for eth1 --> leaf01:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h01", auto_config: false , :mac => "000300111101"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h01", auto_config: false 
        
        # link for eth2 --> leaf02:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h01", auto_config: false , :mac => "000300111102"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h01", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -498,10 +498,10 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for eth1 --> leaf03:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h03", auto_config: false , :mac => "000300333301"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h03", auto_config: false 
        
        # link for eth2 --> leaf04:swp1
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h03", auto_config: false , :mac => "000300333302"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h03", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -530,10 +530,10 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for eth1 --> leaf01:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h02", auto_config: false , :mac => "000300222201"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l01h02", auto_config: false 
        
        # link for eth2 --> leaf02:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h02", auto_config: false , :mac => "000300222202"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l02h02", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -562,10 +562,10 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for eth1 --> leaf03:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h04", auto_config: false , :mac => "000300444401"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l03h04", auto_config: false 
        
        # link for eth2 --> leaf04:swp2
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h04", auto_config: false , :mac => "000300444402"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_l04h04", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
@@ -596,10 +596,10 @@ Vagrant.configure("2") do |config|
        
        # NETWORK INTERFACES
        # link for swp1 --> exit01:swp44
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01i", auto_config: false , :mac => "443839000007"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e01i", auto_config: false 
        
        # link for swp2 --> exit02:swp44
-       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02i", auto_config: false , :mac => "44383900003e"
+       device.vm.network "private_network", virtualbox__intnet: "#{simid}_e02i", auto_config: false 
        
        
        device.vm.provider "virtualbox" do |vbox|
