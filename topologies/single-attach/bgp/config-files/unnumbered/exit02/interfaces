@@ -13,6 +13,10 @@ iface eth0 inet dhcp
   vrf mgmt
 
 
+iface internet-vrf
+	address 10.0.0.102/32
+	vrf-table auto
+
 # uplinks
 iface swp1
 
@@ -25,4 +29,13 @@ iface swp4
 
 iface swp5
 
+iface swp5.2
+	address 169.254.253.1/30
+
+iface swp5.4
+	address 169.254.253.9/30
+	vrf internet-vrf
+
 iface swp6
+       address 169.254.127.3/31
+       vrf internet-vrf
