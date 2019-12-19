@@ -22,6 +22,8 @@ Vagrant.configure("2") do |config|
   config.vm.provider :libvirt do |domain|
     # increase nic adapter count to be greater than 8 for all VMs.
     domain.nic_adapter_count = 130
+    # domain.management_network_name = "default"
+    # domain.management_network_address = "192.168.123.0/24"
   end
 
 # Merely to generate the provisioning file
@@ -704,9 +706,9 @@ end
             :mac => "00:03:00:33:33:01",
             :libvirt__tunnel_type => 'udp',
             :libvirt__tunnel_local_ip => '127.0.0.1',
-            :libvirt__tunnel_local_port => '18022',
+            :libvirt__tunnel_local_port => '18019',
             :libvirt__tunnel_ip => '127.0.0.1',
-            :libvirt__tunnel_port => '19022',
+            :libvirt__tunnel_port => '19019',
             :libvirt__iface_name => 'eth1',
             auto_config: false
 

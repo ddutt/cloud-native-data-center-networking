@@ -1,0 +1,17 @@
+## Configured by Ansible
+#########
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet static
+  mtu 9000
+  # Required for Vagrant
+  post-up ip link set promisc on dev eth1
+  address 172.16.1.101/24
+  post-up ip route add 172.16.0.0/16 via 172.16.1.1
+
