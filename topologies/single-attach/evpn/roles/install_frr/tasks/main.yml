@@ -1,0 +1,14 @@
+---
+ - name: Add FRR repo key
+   apt_key:
+     url: https://deb.frrouting.org/frr/keys.asc
+     state: present
+ - name: Add FRR repo
+   apt_repository:
+     repo: deb https://deb.frrouting.org/frr xenial frr-stable
+     state: present
+ - name: Add FRR
+   apt:
+     name: frr
+     state: present
+     force_apt_get: True

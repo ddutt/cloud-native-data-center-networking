@@ -1,0 +1,12 @@
+---
+ - name: restarts switches with their new configuration
+   shell: sleep 1 && shutdown -r 0
+   become: yes
+   async: 1
+   poll: 0
+   ignore_errors: true
+
+ - name: Wait for switches to come back up
+   wait_for_connection:
+        timeout: 180
+        delay: 15
