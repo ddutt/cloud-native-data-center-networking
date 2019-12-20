@@ -22,6 +22,6 @@ iface bond0 inet static
   bond-lacp-rate 1
   bond-min-links 1
   bond-xmit-hash-policy layer3+4
-  address 172.16.3.104/24
-  post-up ip route add 172.16.0.0/16 via 172.16.3.1
-  post-up ip route add 10.0.0.0/8 via 172.16.3.1
+  address 172.16.4.104/24
+  post-up ip route add 172.16.0.0/16 via 172.16.4.1
+  post-up ip route add 10.0.0.0/8 via 172.16.4.1
