@@ -1,6 +1,19 @@
 ---
+  - name: populate service facts
+    service_facts:
+
   - name: Ping gateway
     command: ping -c 1 {{ ping_gateway[inventory_hostname] }}
+    when: ansible_facts.services['docker.service'] is not defined or ansible_facts.services['docker.service'].state != 'running'
 
-  - name: Ping node on other leaves
+  - name: Ping node on same leaf
     command: ping -c 1 {{ ping_local_nbr[inventory_hostname] }}
+
+  - name: Ping node in different subnet
+    command: ping -c 1 {{ ping_remote_nbr[inventory_hostname] }}
+
+  - name: Ping internet edge
+    command: ping -c 1 {{ internet_edge_ip }}
+
+
+
