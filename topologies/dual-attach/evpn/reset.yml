@@ -20,6 +20,16 @@
   tasks:
     - name: Disable all interfaces
       copy: src=reset-files/interfaces dest=/etc/network
+    - name: Disable docker service
+      systemd:
+         name: docker
+         enabled: no
+      ignore_errors: true
+    - name: Disable FRR service
+      systemd:
+         name: frr
+         enabled: no
+      ignore_errors: true
     - name: reboot servers
       shell: sleep 1 && shutdown -r 0
       become: yes
