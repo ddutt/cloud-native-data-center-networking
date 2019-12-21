@@ -1,0 +1,117 @@
+---
+#
+# Copyright (C) 2018 Cumulus Networks, Inc. All rights reserved
+# 
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included
+# in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+# IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+# TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+# SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+# 
+# https://www.debian.org/legal/licenses/mit
+#
+#
+#
+#
+- hosts: network
+  become: yes
+  pre_tasks:
+    # To prevent trying this demo on unsupported version, define the minimum Cumulus Linux
+    # Release supported by this demo.
+    - name: Verify Minimum Software Version
+      assert:
+        that: "{{ansible_lsb.release is version('3.7', '>=') }}"
+        msg: >
+          "Cumulus Linux version must be 3.7 or later.
+          Version {{ansible_lsb.release}} detected"
+
+    - name: Turn off SSH rev DNS lookup
+      lineinfile:
+         path: /etc/ssh/sshd_config
+         regexp: '^UseDNS '
+         line: UseDNS no
+
+    
+    - name: Restart ssh
+      service: name=sshd state=restarted
+
+    - name: Add vagrant as a user to run net commands
+      lineinfile:
+         path: /etc/netd.conf
+         regexp: '^users_with_show = root, cumulus'
+         line: users_with_show = root, cumulus, vagrant
+      when: ansible_hostname  != "edge01"
+      tags:
+         netd
+
+    - name: Restart netd
+      service: name=netd state=restarted
+      when: ansible_hostname  != "edge01"
+      tags:
+         netd
+
+  roles:
+    - copy_interfaces
+    - copy_frr_daemons
+    - { role: mv_ntp_mgmt_vrf, when: ansible_hostname != 'edge01' }
+    - restart_switches
+      
+- hosts: servers
+  user: cumulus
+  become: yes
+  become_method: sudo
+  pre_tasks:
+    - name: Turn off SSH rev DNS lookup
+      lineinfile:
+         path: /etc/ssh/sshd_config
+         regexp: '^UseDNS '
+         line: UseDNS no
+
+    
+    - name: Restart ssh
+      service: name=sshd state=restarted
+
+    - name: Copy sysctl
+      copy: src=config-files/{{scenario}}/{{ansible_hostname}}/99-frr.conf dest=/etc/sysctl.d/
+      when: scenario=="docker"
+
+    - name: Source sysctl
+      command: sysctl -p /etc/sysctl.d/99-frr.conf
+      when: scenario=="docker"
+
+  roles:
+    - role: enable_ipv6
+      when: scenario=="docker"
+    - role: copy-int-reboot-servers
+    - role: install_docker
+      when: scenario=="docker"
+    - role: install_frr
+      when: scenario=="docker"
+    - role: copy_frr_daemons
+      when: scenario=="docker"
+    - role: restart_switches
+      when: scenario=="docker"
+
+  post_tasks:
+    - name: Pull docker alpine image as default via eth0 is deleted
+      command: docker pull alpine
+      when: scenario=="docker"      
+    - name: Delete default route pointing out mgmt interface
+      command: ip ro del default
+      become: yes
+      when: scenario=="docker"
+        
+      

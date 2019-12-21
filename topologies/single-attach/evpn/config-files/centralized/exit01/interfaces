@@ -1,0 +1,79 @@
+auto all
+
+iface lo inet loopback
+	address 10.0.0.101/32
+	vxlan-local-tunnelip 10.0.0.101
+
+iface eth0 inet dhcp
+	vrf mgmt
+
+iface evpn-vrf
+	address 10.0.0.101/32
+	vrf-table auto
+
+iface mgmt
+	address 127.0.0.1/8
+	vrf-table auto
+
+iface internet-vrf
+	address 10.0.0.101/32
+	vrf-table auto
+
+iface bridge
+	bridge-vlan-aware yes
+	bridge-vids 4001
+	bridge-ports vni24 vni13
+
+iface swp1
+  mtu 9216
+
+iface swp2
+  mtu 9216
+
+iface swp5
+
+iface swp5.2
+      address 169.254.254.1/30
+
+iface swp5.3
+      address 169.254.254.5/30
+      vrf evpn-vrf
+
+iface swp5.4
+      address 169.254.254.9/30
+      vrf internet-vrf
+
+iface swp6
+      address 169.254.127.1/31
+      vrf internet-vrf
+
+iface vni13
+  mtu 9000
+  vxlan-id 13
+  bridge-access 13
+  bridge-learning off
+
+iface vni24
+  mtu 9000
+  vxlan-id 24
+  bridge-access 24
+  bridge-learning off
+  bridge-arp-nd-suppress on
+
+iface vlan13
+    mtu 9000
+    address 172.16.1.11/24
+    address-virtual 44:39:39:ff:00:13 172.16.1.1/24
+    vlan-id 13
+    vlan-raw-device bridge
+    vrf evpn-vrf
+
+iface vlan24
+    mtu 9000
+    address 172.16.2.11/24
+    address-virtual 44:39:39:ff:00:14 172.16.2.1/24
+    vlan-id 24 
+    vlan-raw-device bridge
+    vrf evpn-vrf
+
+

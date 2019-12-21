@@ -1,0 +1,6 @@
+---
+  - name: Ping gateway
+    command: ping -c 1 {{ ping_gateway[inventory_hostname] }}
+
+  - name: Ping node on other leaves
+    command: ping -c 1 {{ ping_local_nbr[inventory_hostname] }}

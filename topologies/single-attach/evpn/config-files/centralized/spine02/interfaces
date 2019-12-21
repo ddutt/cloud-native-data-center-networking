@@ -1,0 +1,27 @@
+auto all
+
+iface lo inet loopback
+
+# Management interface
+
+iface eth0 inet dhcp
+    vrf mgmt
+
+iface mgmt
+    address 127.0.0.1/8
+    vrf-table auto
+
+# downlinks
+iface swp1
+    mtu 9216
+iface swp2
+    mtu 9216
+iface swp3
+    mtu 9216
+iface swp4
+    mtu 9216
+iface swp5
+    mtu 9216
+iface swp6
+    mtu 9216
+

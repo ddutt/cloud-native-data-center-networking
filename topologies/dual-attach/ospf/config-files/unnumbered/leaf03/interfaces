@@ -44,20 +44,23 @@ iface swp6
 
 iface bond01
   bond-slaves swp5
-  bridge-access 10
+  bridge-access 13
   clag-id 1
 
 iface bond02
   bond-slaves swp6
-  bridge-access 10
+  bridge-access 24
   clag-id 2
 
 iface bridge
      bridge-vlan-aware yes
      bridge-ports bond01 bond02 peerlink
-     bridge-vids 10
-     bridge-pvid 10
+     bridge-vids 13 24
 
-iface vlan10
-     vlan-id 10
+iface vlan13
+     vlan-id 13
+     vlan-raw-device bridge
+
+iface vlan24
+     vlan-id 24
      vlan-raw-device bridge

@@ -1,0 +1,37 @@
+auto lo
+iface lo inet static
+   address 10.0.0.100/32
+
+auto eth0
+iface eth0 inet dhcp
+
+auto eth1
+iface eth1 inet manual
+
+auto eth1.2
+iface eth1.2 inet static
+   address 169.254.254.2/30
+
+auto eth1.3
+iface eth1.3 inet static
+   address 169.254.254.6/30
+
+auto eth1.4
+iface eth1.4 inet static
+   address 169.254.254.10/30
+
+auto eth2
+iface eth2 inet manual
+
+auto eth2.2
+iface eth2.2 inet static
+   address 169.254.253.2/30
+
+auto eth2.3
+iface eth2.3 inet static
+   address 169.254.253.6/30
+
+auto eth2.4
+iface eth2.4 inet static
+   address 169.254.253.10/30
+
