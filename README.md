@@ -3,8 +3,6 @@ Code repository for the O'Reilly book 'Cloud Native Data Center Networking'. You
 
 ![Book Cover](./cdcn-cover.jpeg)
 
-The github repo is not fully done yet, though a large portion of it is operational. I discuss what is working and what is not towards the end of this README.
-
 All my code has been tested on a Ubuntu laptop running either 18.04 or 19.04. If you experience an issue, please file a ticket and I'll do what I can to help, no promises. If you send me a fix via a [pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request), I'll be grateful and incorporate the fix as quickly as I can.
 
 ## Software Used
@@ -29,7 +27,7 @@ The Vagrant boxes used in the simulation include:
 
 | Vagrant Box                       | Version     |
 |-----------------------------------|-------------|
-| CumulusCommunity/cumulus-vx       | > 3.6, < 4.0|
+| CumulusCommunity/cumulus-vx       | > 3.6, < 3.7.11|
 | generic/ubuntu1604                | latest      |
 
 I use Ubuntu 16.04 because the playbooks haven't been migrated to use Netplan, the method to configure network interfaces, used in releases starting with Ubuntu 18.04. I also use the specific Ubuntu boxes as they support libvirt images. In many cases, you can convert a Vagrant virtualbox image into a libvirt image via the Vagrant plugin, [vagrant-mutate](https://github.com/sciurus/vagrant-mutate). The docker-ce Ubuntu box removes the need to install Docker. But you can use any other Ubuntu 1604 image that is supported by libvirt, if you wish. If you choose to use a different Ubuntu image than generic/ubuntu1604, then remember to change the name at the top of your Vagrantfile.
@@ -92,7 +90,7 @@ The docker scenario takes longer to finish as it requires the installation of bo
 
 The playbooks for each of the scenarios uses Ansible as a dumb file copier. The code samples under the Ansible directory provides options for the dual attach topology and a single scenario with different levels of sophistication. 
 
-A common way to test if the configuration is working correctly is to test reachability between servers and from the server to the internet. The internet facing router is provided with an address 172.16.253.1 that can be used to ping from the servers to check that the path is correctly plumbed all the way to the edge of the data center. Pinging from one server to another from reachability is also good.
+A common way to test if the configuration is working correctly is to test reachability between servers and from the server to the internet. The internet facing router is provided with an address 172.16.253.1 that can be used to ping from the servers to check that the path is correctly plumbed all the way to the edge of the data center. Pinging from one server to another from reachability is also good. Run the playbook ping.yml via `ansible-playbook ping.yml` and the playbook should validate that all appropriate entities such as gateway, neighbor node etc. are pingable from a given node.
 
 As this book is vendor-neutral, with demonstrations and samples using specific vendors owing to my familiarity and the availability of Vagrant boxes, I've not followed the methodology of writing playbooks dictated by any vendor. I've tried to use the most easily understandable and open source code as much as possible. Specifically in the case of Cumulus, all FRR configuration is viewable as `/etc/frr/frr.conf`. All bridging (L2) and VXLAN configuration is under `/etc/network/interfaces` because FRR does not support any L2 or VXLAN configuration as of version 7.2. You can access FRR's shell via the `vtysh` command. vtysh provides network operators unfamiliar with Linux with a shell that's more familiar. Cumulus-familiar network operators can also use the NCLU commands available under the `net` family of commands.
 
@@ -102,16 +100,12 @@ When you run the reset.yml playbook, the reload networking task on switches fail
 
 ## What Scenarios Are Working and Tested
 
-The status as of Nov 30, 2019 evening is as follows. 
+The status as of Dec 21, 2019 is as follows:
 
-The following dual-attached topologies are working:
+The following scenarios and subscenarios are working for both topologies:
 
 * OSPF with all subscenarios. The exit, firewall and edge nodes are not configured in any of the subscenarios of each of these scenarios.
 
 * BGP and EVPN all subscenarios. All nodes including exit, edge and firewall nodes are configured and working.
 
-The following single-attached topologies are working:
-
-* OSPF and BGP with all subscenarios. The exit, firewall and edge nodes are not configured in any of the subscenarios of each of these scenarios.
-
-The remaining scenario and subscenarios are being worked on and should be up in the next few days. Validation playbooks, Playbooks illustrating better use of Ansible etc. are also not ready and will be added after adding support for the remaining scenarios and subscenarios.
+The remaining OSPF configuration is being worked on and should be up before the end of the year. Validation playbooks, playbooks illustrating better use of Ansible etc. are also not ready and will be added after adding the OSPF configuration support.
