@@ -39,15 +39,19 @@ iface swp2
 iface swp5
 
 iface swp5.2
+      address 169.254.254.1/30
 
 iface swp5.3
-	vrf evpn-vrf
+      address 169.254.254.5/30
+      vrf evpn-vrf
 
 iface swp5.4
-	vrf internet-vrf
+      address 169.254.254.9/30
+      vrf internet-vrf
 
 iface swp6
-	vrf internet-vrf
+      address 169.254.127.1/31
+      vrf internet-vrf
 
 iface vxlan4001
         mtu 9216
