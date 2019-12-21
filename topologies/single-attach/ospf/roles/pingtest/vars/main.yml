@@ -1,0 +1,12 @@
+ping_gateway:
+  server101: 172.16.1.1
+  server102: 172.16.2.1
+  server103: 172.16.3.1
+  server104: 172.16.4.1
+
+ping_local_nbr:
+  server101: 172.16.4.104
+  server102: 172.16.1.101
+  server103: 172.16.2.102
+  server104: 172.16.3.103
+
