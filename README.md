@@ -27,7 +27,7 @@ The Vagrant boxes used in the simulation include:
 
 | Vagrant Box                       | Version     |
 |-----------------------------------|-------------|
-| CumulusCommunity/cumulus-vx       | > 3.6, < 3.7.11|
+| CumulusCommunity/cumulus-vx       | > 3.6, < 4.0|
 | generic/ubuntu1604                | latest      |
 
 I use Ubuntu 16.04 because the playbooks haven't been migrated to use Netplan, the method to configure network interfaces, used in releases starting with Ubuntu 18.04. I also use the specific Ubuntu boxes as they support libvirt images. In many cases, you can convert a Vagrant virtualbox image into a libvirt image via the Vagrant plugin, [vagrant-mutate](https://github.com/sciurus/vagrant-mutate). The docker-ce Ubuntu box removes the need to install Docker. But you can use any other Ubuntu 1604 image that is supported by libvirt, if you wish. If you choose to use a different Ubuntu image than generic/ubuntu1604, then remember to change the name at the top of your Vagrantfile.
@@ -78,7 +78,7 @@ To destroy the topology, you run `vagrant destroy -f`. To destroy a subset of no
 ## Running the Playbooks
 
 We use Ansible to run the playbooks. After starting the topology, go to the appropriate playbook directory: ospf, bgp or evpn. In that directory, you can deploy the configuration via the command `ansible-playbook -b deploy.yml`.
-You can switch between subscenarios by running the `reset.yml` playbook within each of the scenarios before running the `deploy.yml` playbook. 
+You can switch between subscenarios by running the `reset.yml` playbook within each of the scenarios before running the `deploy.yml` playbook. However, due to some reason I've not figured out yet, **the reset followed by deploy doesn't work for the distributed anycast gateway scenario with EVPN**. For that scenario alone, you need a fresh spin up. I'm troubleshooting why this might be so. 
 
 The names of the three scenarios supported by ospf and bgp are: numbered, unnumbered, docker. The first configures the switches to run the numbered version of the protocol and the second, the unnumbered version. The third installs docker and FRR and is used to test routing on the host.
 
