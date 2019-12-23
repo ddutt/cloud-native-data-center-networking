@@ -26,6 +26,14 @@
 #
 #
 #
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Check that the scenario is a valid one
+      assert:
+        that: scenario in ['centralized', 'distributed', 'ospf-ibgp']
+        fail_msg: "invalid scenario defined, must be one of ['centralized', 'distributed', 'ospf-ibgp']"
+
 - hosts: network
   become: yes
   pre_tasks:

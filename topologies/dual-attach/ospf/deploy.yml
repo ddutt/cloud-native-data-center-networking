@@ -26,11 +26,23 @@
 #
 #
 #
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: Check that the scenario is a valid one
+      assert:
+        that: scenario in ['numbered', 'unnumbered', 'docker']
+        fail_msg: "invalid scenario defined, must be one of ['numbered', 'unnumbered', 'docker']"
+
 - hosts: network
   become: yes
   pre_tasks:
     # To prevent trying this demo on unsupported version, define the minimum Cumulus Linux
     # Release supported by this demo.
+    - name: Check that the scenario is a valid one
+      assert:
+        that: scenario in ['numbered', 'unnumbered', 'docker']
+      
     - name: Verify Minimum Software Version
       assert:
         that: "{{ansible_lsb.release is version('3.7', '>=') }}"
